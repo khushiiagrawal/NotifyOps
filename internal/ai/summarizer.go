@@ -321,6 +321,12 @@ func (s *Summarizer) GenerateSlackMessage(issueData *gh.IssueData, summary *Issu
 		actionItemsText = "• " + actionItemsText
 	}
 
+	// Safely get repository name
+	repoName := "Unknown Repository"
+	if issueData.Repository != nil {
+		repoName = issueData.Repository.GetFullName()
+	}
+
 	return map[string]interface{}{
 		"blocks": []map[string]interface{}{
 			{
@@ -335,7 +341,7 @@ func (s *Summarizer) GenerateSlackMessage(issueData *gh.IssueData, summary *Issu
 				"fields": []map[string]interface{}{
 					{
 						"type": "mrkdwn",
-						"text": fmt.Sprintf("*Repository:*\n%s", issueData.Repository.GetFullName()),
+						"text": fmt.Sprintf("*Repository:*\n%s", repoName),
 					},
 					{
 						"type": "mrkdwn",
@@ -391,7 +397,7 @@ func (s *Summarizer) GenerateSlackMessage(issueData *gh.IssueData, summary *Issu
 							"text": "Assign",
 						},
 						"action_id": "assign_issue",
-						"value":     fmt.Sprintf("%s:%d", issueData.Repository.GetFullName(), issueData.Issue.GetNumber()),
+						"value":     fmt.Sprintf("%s:%d", repoName, issueData.Issue.GetNumber()),
 					},
 					{
 						"type": "button",
@@ -400,7 +406,7 @@ func (s *Summarizer) GenerateSlackMessage(issueData *gh.IssueData, summary *Issu
 							"text": "Close",
 						},
 						"action_id": "close_issue",
-						"value":     fmt.Sprintf("%s:%d", issueData.Repository.GetFullName(), issueData.Issue.GetNumber()),
+						"value":     fmt.Sprintf("%s:%d", repoName, issueData.Issue.GetNumber()),
 						"style":     "danger",
 					},
 					{
@@ -410,7 +416,7 @@ func (s *Summarizer) GenerateSlackMessage(issueData *gh.IssueData, summary *Issu
 							"text": "Request Fix",
 						},
 						"action_id": "request_fix",
-						"value":     fmt.Sprintf("%s:%d", issueData.Repository.GetFullName(), issueData.Issue.GetNumber()),
+						"value":     fmt.Sprintf("%s:%d", repoName, issueData.Issue.GetNumber()),
 					},
 				},
 			},

@@ -77,18 +77,42 @@ func (n *Notifier) SendIssueSummary(ctx context.Context, message map[string]inte
 
 // convertToSlackBlocks converts a message map to Slack blocks
 func (n *Notifier) convertToSlackBlocks(message map[string]interface{}) ([]slack.Block, error) {
-	blocksData, ok := message["blocks"].([]interface{})
+	blocksData, ok := message["blocks"]
 	if !ok {
 		return nil, fmt.Errorf("invalid message format: missing blocks")
 	}
 
+	// Debug: Log the message structure
+	n.logger.Info("Converting Slack message",
+		zap.Any("message", message),
+		zap.Any("blocks_data", blocksData),
+		zap.String("blocks_type", fmt.Sprintf("%T", blocksData)),
+	)
+
 	var blocks []slack.Block
-	for _, blockData := range blocksData {
-		block, err := n.convertBlock(blockData)
-		if err != nil {
-			return nil, fmt.Errorf("failed to convert block: %w", err)
+
+	// Handle different types of blocks data
+	switch v := blocksData.(type) {
+	case []interface{}:
+		for i, blockData := range v {
+			n.logger.Info("Processing block", zap.Int("index", i), zap.Any("block", blockData))
+			block, err := n.convertBlock(blockData)
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert block %d: %w", i, err)
+			}
+			blocks = append(blocks, block)
 		}
-		blocks = append(blocks, block)
+	case []map[string]interface{}:
+		for i, blockData := range v {
+			n.logger.Info("Processing block", zap.Int("index", i), zap.Any("block", blockData))
+			block, err := n.convertBlock(blockData)
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert block %d: %w", i, err)
+			}
+			blocks = append(blocks, block)
+		}
+	default:
+		return nil, fmt.Errorf("invalid blocks format: expected []interface{} or []map[string]interface{}, got %T", blocksData)
 	}
 
 	return blocks, nil
@@ -158,35 +182,63 @@ func (n *Notifier) convertSectionBlock(blockMap map[string]interface{}) (slack.B
 	}
 
 	// Handle fields section
-	if fieldsData, ok := blockMap["fields"].([]interface{}); ok {
+	if fieldsData, ok := blockMap["fields"]; ok {
 		var fields []*slack.TextBlockObject
-		for _, fieldData := range fieldsData {
-			fieldMap, ok := fieldData.(map[string]interface{})
-			if !ok {
-				continue
-			}
+		
+		// Handle different types of fields data
+		switch v := fieldsData.(type) {
+		case []interface{}:
+			for _, fieldData := range v {
+				fieldMap, ok := fieldData.(map[string]interface{})
+				if !ok {
+					continue
+				}
 
-			text, ok := fieldMap["text"].(string)
-			if !ok {
-				continue
-			}
+				text, ok := fieldMap["text"].(string)
+				if !ok {
+					continue
+				}
 
-			textType, ok := fieldMap["type"].(string)
-			if !ok {
-				textType = "mrkdwn"
-			}
+				textType, ok := fieldMap["type"].(string)
+				if !ok {
+					textType = "mrkdwn"
+				}
 
-			var textObj *slack.TextBlockObject
-			if textType == "plain_text" {
-				textObj = slack.NewTextBlockObject("plain_text", text, false, false)
-			} else {
-				textObj = slack.NewTextBlockObject("mrkdwn", text, false, false)
-			}
+				var textObj *slack.TextBlockObject
+				if textType == "plain_text" {
+					textObj = slack.NewTextBlockObject("plain_text", text, false, false)
+				} else {
+					textObj = slack.NewTextBlockObject("mrkdwn", text, false, false)
+				}
 
-			fields = append(fields, textObj)
+				fields = append(fields, textObj)
+			}
+		case []map[string]interface{}:
+			for _, fieldMap := range v {
+				text, ok := fieldMap["text"].(string)
+				if !ok {
+					continue
+				}
+
+				textType, ok := fieldMap["type"].(string)
+				if !ok {
+					textType = "mrkdwn"
+				}
+
+				var textObj *slack.TextBlockObject
+				if textType == "plain_text" {
+					textObj = slack.NewTextBlockObject("plain_text", text, false, false)
+				} else {
+					textObj = slack.NewTextBlockObject("mrkdwn", text, false, false)
+				}
+
+				fields = append(fields, textObj)
+			}
 		}
 
-		return slack.NewSectionBlock(nil, fields, nil), nil
+		if len(fields) > 0 {
+			return slack.NewSectionBlock(nil, fields, nil), nil
+		}
 	}
 
 	return nil, fmt.Errorf("invalid section block: missing text or fields")

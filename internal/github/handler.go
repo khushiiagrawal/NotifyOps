@@ -115,7 +115,11 @@ func (h *Handler) HandleWebhook(w http.ResponseWriter, r *http.Request) {
 
 	// Record metrics
 	duration := time.Since(start)
-	h.metrics.RecordGitHubWebhook(eventType, issueData.Action, status, duration)
+	action := ""
+	if issueData != nil {
+		action = issueData.Action
+	}
+	h.metrics.RecordGitHubWebhook(eventType, action, status, duration)
 
 	// If we have issue data, process it further
 	if issueData != nil && err == nil {
@@ -134,6 +138,13 @@ func (h *Handler) handleIssuesEvent(body []byte) (*IssueData, string, error) {
 	if err := json.Unmarshal(body, &event); err != nil {
 		return nil, "error", fmt.Errorf("failed to unmarshal issues event: %w", err)
 	}
+
+	// Debug: Log the raw event structure
+	h.logger.Info("Parsed issues event",
+		zap.Any("action", event.Action),
+		zap.Any("issue", event.Issue),
+		zap.Any("sender", event.Sender),
+	)
 
 	// Only process certain actions
 	if event.Action == nil || !h.shouldProcessAction(*event.Action) {
@@ -188,29 +199,77 @@ func (h *Handler) enrichIssueData(ctx context.Context, issue *github.Issue, acti
 		return nil, fmt.Errorf("issue is nil")
 	}
 
-	// Extract repository information
-	repoOwner := issue.GetRepository().GetOwner().GetLogin()
-	repoName := issue.GetRepository().GetName()
+	// Extract repository information with better error handling
+	var repoOwner, repoName string
 
-	// Fetch comments
-	comments, err := h.fetchIssueComments(ctx, repoOwner, repoName, issue.GetNumber())
-	if err != nil {
-		h.metrics.RecordGitHubAPIError("fetch_comments", "api_error")
-		h.logger.Error("Failed to fetch issue comments", zap.Error(err))
-		// Continue without comments
+	if issue.GetRepository() != nil {
+		repoOwner = issue.GetRepository().GetOwner().GetLogin()
+		repoName = issue.GetRepository().GetName()
+	} else {
+		// Fallback: extract from RepositoryURL if Repository object is nil
+		repoURL := issue.GetRepositoryURL()
+		if repoURL != "" {
+			// Extract owner/repo from URL like "https://api.github.com/repos/owner/repo"
+			parts := strings.Split(repoURL, "/")
+			if len(parts) >= 5 {
+				repoOwner = parts[len(parts)-2]
+				repoName = parts[len(parts)-1]
+			}
+		}
 	}
 
-	// Fetch related commits
-	commits, err := h.fetchRelatedCommits(ctx, repoOwner, repoName, issue.GetNumber())
-	if err != nil {
-		h.metrics.RecordGitHubAPIError("fetch_commits", "api_error")
-		h.logger.Error("Failed to fetch related commits", zap.Error(err))
-		// Continue without commits
+	// Add debugging and validation
+	h.logger.Info("Enriching issue data",
+		zap.String("repo_owner", repoOwner),
+		zap.String("repo_name", repoName),
+		zap.Int("issue_number", issue.GetNumber()),
+		zap.String("action", action),
+		zap.Any("repository", issue.GetRepository()),
+	)
+
+	// Validate repository information
+	if repoOwner == "" || repoName == "" {
+		h.logger.Error("Invalid repository information",
+			zap.String("repo_owner", repoOwner),
+			zap.String("repo_name", repoName),
+			zap.Any("repository", issue.GetRepository()),
+		)
+		// Instead of failing, continue with empty repository info
+		h.logger.Warn("Continuing without repository information")
+	}
+
+	// Fetch comments (only if we have repository info)
+	var comments []*github.IssueComment
+	if repoOwner != "" && repoName != "" {
+		var err error
+		comments, err = h.fetchIssueComments(ctx, repoOwner, repoName, issue.GetNumber())
+		if err != nil {
+			h.metrics.RecordGitHubAPIError("fetch_comments", "api_error")
+			h.logger.Error("Failed to fetch issue comments", zap.Error(err))
+			// Continue without comments
+		}
+	} else {
+		h.logger.Info("Skipping comment fetch due to missing repository information")
+	}
+
+	// Fetch related commits (only if we have repository info)
+	var commits []*github.RepositoryCommit
+	if repoOwner != "" && repoName != "" {
+		var err error
+		commits, err = h.fetchRelatedCommits(ctx, repoOwner, repoName, issue.GetNumber())
+		if err != nil {
+			h.metrics.RecordGitHubAPIError("fetch_commits", "api_error")
+			h.logger.Error("Failed to fetch related commits", zap.Error(err))
+			// Continue without commits
+		}
+	} else {
+		h.logger.Info("Skipping commit fetch due to missing repository information")
 	}
 
 	// Fetch commit files
 	var files []*github.CommitFile
-	if len(commits) > 0 {
+	if len(commits) > 0 && repoOwner != "" && repoName != "" {
+		var err error
 		files, err = h.fetchCommitFiles(ctx, repoOwner, repoName, commits[0].GetSHA())
 		if err != nil {
 			h.metrics.RecordGitHubAPIError("fetch_files", "api_error")
@@ -219,12 +278,27 @@ func (h *Handler) enrichIssueData(ctx context.Context, issue *github.Issue, acti
 		}
 	}
 
+	// Create a mock repository object if the original is nil
+	var repository *github.Repository
+	if issue.GetRepository() != nil {
+		repository = issue.GetRepository()
+	} else if repoOwner != "" && repoName != "" {
+		// Create a minimal repository object with the extracted info
+		repository = &github.Repository{
+			FullName: github.String(fmt.Sprintf("%s/%s", repoOwner, repoName)),
+			Owner: &github.User{
+				Login: github.String(repoOwner),
+			},
+			Name: github.String(repoName),
+		}
+	}
+
 	return &IssueData{
 		Issue:      issue,
 		Comments:   comments,
 		Commits:    commits,
 		Files:      files,
-		Repository: issue.GetRepository(),
+		Repository: repository,
 		EventType:  eventType,
 		Action:     action,
 	}, nil
@@ -232,6 +306,10 @@ func (h *Handler) enrichIssueData(ctx context.Context, issue *github.Issue, acti
 
 // fetchIssueComments fetches comments for an issue
 func (h *Handler) fetchIssueComments(ctx context.Context, owner, repo string, issueNumber int) ([]*github.IssueComment, error) {
+	if owner == "" || repo == "" {
+		return nil, fmt.Errorf("invalid repository: owner=%s, repo=%s", owner, repo)
+	}
+
 	comments, _, err := h.client.Issues.ListComments(ctx, owner, repo, issueNumber, &github.IssueListCommentsOptions{
 		ListOptions: github.ListOptions{PerPage: 100},
 	})
@@ -240,6 +318,10 @@ func (h *Handler) fetchIssueComments(ctx context.Context, owner, repo string, is
 
 // fetchRelatedCommits fetches commits related to an issue
 func (h *Handler) fetchRelatedCommits(ctx context.Context, owner, repo string, issueNumber int) ([]*github.RepositoryCommit, error) {
+	if owner == "" || repo == "" {
+		return nil, fmt.Errorf("invalid repository: owner=%s, repo=%s", owner, repo)
+	}
+
 	// Search for commits that reference this issue
 	query := fmt.Sprintf("repo:%s/%s issue:%d", owner, repo, issueNumber)
 	commits, _, err := h.client.Search.Commits(ctx, query, &github.SearchOptions{

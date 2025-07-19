@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # GitHub Issue AI Bot
   github-issue-ai-bot:
@@ -9,20 +7,20 @@ services:
       - "9090:9090"  # Metrics
     environment:
       # GitHub Configuration
-      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
-      - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
+      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET:-test_secret}
+      - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN:-test_token}
       - GITHUB_BASE_URL=https://api.github.com
       
       # OpenAI Configuration
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENAI_MODEL=gpt-4
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-test_key}
+      - OPENAI_MODEL=gpt-3.5-turbo
       - OPENAI_MAX_TOKENS=2000
       - OPENAI_TEMPERATURE=0.7
       
       # Slack Configuration
-      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
-      - SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET}
-      - SLACK_CHANNEL_ID=${SLACK_CHANNEL_ID}
+      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN:-xoxb-test}
+      - SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET:-test_secret}
+      - SLACK_CHANNEL_ID=${SLACK_CHANNEL_ID:-C1234567890}
       
       # Server Configuration
       - SERVER_PORT=8080
@@ -41,12 +39,6 @@ services:
     networks:
       - monitoring
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
   # Prometheus for metrics collection
   prometheus:
