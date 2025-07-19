@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  # GitHub Issue AI Bot
+  github-issue-ai-bot:
+    build: .
+    ports:
+      - "8080:8080"  # Main application
+      - "9090:9090"  # Metrics
+    environment:
+      # GitHub Configuration
+      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
+      - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
+      - GITHUB_BASE_URL=https://api.github.com
+      
+      # OpenAI Configuration
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=gpt-4
+      - OPENAI_MAX_TOKENS=2000
+      - OPENAI_TEMPERATURE=0.7
+      
+      # Slack Configuration
+      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
+      - SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET}
+      - SLACK_CHANNEL_ID=${SLACK_CHANNEL_ID}
+      
+      # Server Configuration
+      - SERVER_PORT=8080
+      - SERVER_READ_TIMEOUT=30s
+      - SERVER_WRITE_TIMEOUT=30s
+      - SERVER_IDLE_TIMEOUT=60s
+      
+      # Monitoring Configuration
+      - METRICS_PORT=9090
+      - METRICS_PATH=/metrics
+      
+      # Logging
+      - LOG_LEVEL=info
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/dashboards.json:/etc/grafana/provisioning/dashboards/dashboards.json
+      - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  # Optional: Redis for caching (if needed in future)
+  # redis:
+  #   image: redis:alpine
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - monitoring
+  #   restart: unless-stopped
+
+volumes:
+  prometheus_data:
+  grafana_data:
+  # redis_data:
+
+networks:
+  monitoring:
+    driver: bridge 
