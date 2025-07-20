@@ -169,6 +169,57 @@ The application includes pre-configured Grafana dashboards for:
 - Slack Message Delivery
 - Issue Processing Analytics
 
+## 🎨 AI Prompt Customization
+
+The bot supports multiple AI personalities and analysis styles that can be customized to match your team's needs:
+
+### Available Prompt Styles
+
+| Style | Personality | Focus | Best For |
+|-------|-------------|-------|----------|
+| `master_analyst` | Master Analyst | Technical Impact | Comprehensive technical analysis |
+| `senior_developer` | Senior Developer | Code Quality | Development-focused analysis |
+| `devops_engineer` | DevOps Engineer | Operations | Infrastructure and deployment focus |
+| `product_manager` | Product Manager | Business Value | User experience and ROI analysis |
+| `security_expert` | Security Expert | Security | Security vulnerability assessment |
+| `executive_summary` | Master Analyst | Business Impact | High-level executive summaries |
+| `quick_triage` | Senior Developer | Rapid Assessment | Fast issue triage |
+| `startup_focused` | Product Manager | Business Growth | Early-stage company needs |
+| `enterprise_focused` | Master Analyst | Enterprise | Large organization requirements |
+| `security_critical` | Security Expert | Critical Security | High-security environments |
+
+### Setting Prompt Styles
+
+**Via Environment Variable:**
+```bash
+export OPENAI_PROMPT_STYLE=security_expert
+make run
+```
+
+**Via API (Runtime):**
+```bash
+# List available styles
+curl http://localhost:8080/api/prompt-styles
+
+# Change style
+curl -X POST http://localhost:8080/api/prompt-style \
+  -H "Content-Type: application/json" \
+  -d '{"style": "product_manager"}'
+```
+
+**Via Docker Compose:**
+```yaml
+environment:
+  - OPENAI_PROMPT_STYLE=startup_focused
+```
+
+### Testing Different Styles
+
+Use the provided script to test all available styles:
+```bash
+./scripts/test_prompts.sh
+```
+
 ## 🔧 Configuration
 
 ### Environment Variables
@@ -182,6 +233,7 @@ The application includes pre-configured Grafana dashboards for:
 | `OPENAI_MODEL` | OpenAI model to use | `gpt-4` |
 | `OPENAI_MAX_TOKENS` | Maximum tokens for response | `2000` |
 | `OPENAI_TEMPERATURE` | AI response temperature | `0.7` |
+| `OPENAI_PROMPT_STYLE` | AI prompt style/personality | `master_analyst` |
 | `SLACK_BOT_TOKEN` | Slack bot token | Required |
 | `SLACK_SIGNING_SECRET` | Slack signing secret | Required |
 | `SLACK_CHANNEL_ID` | Target Slack channel ID | Required |

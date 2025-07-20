@@ -41,6 +41,7 @@ type OpenAIConfig struct {
 	Model       string
 	MaxTokens   int
 	Temperature float64
+	PromptStyle string // Name of the prompt style to use
 }
 
 // SlackConfig holds Slack-related configuration
@@ -99,6 +100,7 @@ func Load() (*Config, error) {
 			Model:       getEnv("OPENAI_MODEL", "gpt-4"),
 			MaxTokens:   getIntEnv("OPENAI_MAX_TOKENS", 2000),
 			Temperature: getFloatEnv("OPENAI_TEMPERATURE", 0.7),
+			PromptStyle: getEnv("OPENAI_PROMPT_STYLE", "master_analyst"),
 		},
 		Slack: SlackConfig{
 			BotToken:      getEnv("SLACK_BOT_TOKEN", ""),

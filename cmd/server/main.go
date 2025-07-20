@@ -52,15 +52,32 @@ func main() {
 		metrics,
 	)
 
-	// Initialize AI summarizer
-	summarizer := ai.NewSummarizer(
-		cfg.OpenAI.APIKey,
-		cfg.OpenAI.Model,
-		cfg.OpenAI.MaxTokens,
-		float32(cfg.OpenAI.Temperature),
-		logger,
-		metrics,
-	)
+	// Initialize AI summarizer with prompt style
+	var summarizer *ai.Summarizer
+
+	// Check if a predefined prompt style is specified
+	if promptStyle, exists := ai.GetPromptStyle(cfg.OpenAI.PromptStyle); exists {
+		summarizer = ai.NewSummarizerWithStyle(
+			cfg.OpenAI.APIKey,
+			cfg.OpenAI.Model,
+			cfg.OpenAI.MaxTokens,
+			float32(cfg.OpenAI.Temperature),
+			logger,
+			metrics,
+			promptStyle,
+		)
+		logger.Info("Using predefined prompt style", zap.String("style", cfg.OpenAI.PromptStyle))
+	} else {
+		summarizer = ai.NewSummarizer(
+			cfg.OpenAI.APIKey,
+			cfg.OpenAI.Model,
+			cfg.OpenAI.MaxTokens,
+			float32(cfg.OpenAI.Temperature),
+			logger,
+			metrics,
+		)
+		logger.Info("Using default prompt style")
+	}
 
 	// Initialize Slack notifier
 	slackNotifier := slack.NewNotifier(
@@ -93,6 +110,41 @@ func main() {
 
 	// Metrics endpoint
 	router.GET(cfg.Monitor.MetricsPath, gin.WrapH(metrics.Handler()))
+
+	// Prompt styles endpoint
+	router.GET("/api/prompt-styles", func(c *gin.Context) {
+		styles := ai.ListPromptStyles()
+		c.JSON(http.StatusOK, gin.H{
+			"available_styles": styles,
+			"current_style":    cfg.OpenAI.PromptStyle,
+		})
+	})
+
+	// Change prompt style endpoint
+	router.POST("/api/prompt-style", func(c *gin.Context) {
+		var request struct {
+			Style string `json:"style" binding:"required"`
+		}
+
+		if err := c.ShouldBindJSON(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+			return
+		}
+
+		if promptStyle, exists := ai.GetPromptStyle(request.Style); exists {
+			summarizer.SetPromptStyle(promptStyle)
+			logger.Info("Changed prompt style", zap.String("style", request.Style))
+			c.JSON(http.StatusOK, gin.H{
+				"message": "Prompt style changed successfully",
+				"style":   request.Style,
+			})
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error":            "Invalid prompt style",
+				"available_styles": ai.ListPromptStyles(),
+			})
+		}
+	})
 
 	// GitHub webhook endpoint
 	router.POST("/webhook/github", func(c *gin.Context) {

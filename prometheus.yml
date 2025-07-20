@@ -15,7 +15,7 @@ scrape_configs:
   # GitHub Issue AI Bot
   - job_name: 'github-issue-ai-bot'
     static_configs:
-      - targets: ['github-issue-ai-bot:9090']
+      - targets: ['localhost:8080']
     metrics_path: '/metrics'
     scrape_interval: 10s
     scrape_timeout: 5s

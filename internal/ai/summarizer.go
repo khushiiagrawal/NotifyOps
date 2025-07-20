@@ -21,6 +21,16 @@ type Summarizer struct {
 	temp      float32
 	logger    *zap.Logger
 	metrics   MetricsRecorder
+	style     PromptStyle
+}
+
+// PromptStyle defines the AI's analysis style and personality
+type PromptStyle struct {
+	Personality   string            // The AI's role/personality
+	AnalysisFocus string            // What aspects to focus on
+	Tone          string            // Communication tone
+	DetailLevel   string            // How detailed the analysis should be
+	CustomFields  map[string]string // Additional custom fields
 }
 
 // MetricsRecorder interface for recording metrics
@@ -52,7 +62,39 @@ func NewSummarizer(apiKey, model string, maxTokens int, temp float32, logger *za
 		temp:      temp,
 		logger:    logger,
 		metrics:   metrics,
+		style:     DefaultPromptStyle(),
 	}
+}
+
+// NewSummarizerWithStyle creates a new AI summarizer with custom prompt style
+func NewSummarizerWithStyle(apiKey, model string, maxTokens int, temp float32, logger *zap.Logger, metrics MetricsRecorder, style PromptStyle) *Summarizer {
+	client := openai.NewClient(apiKey)
+
+	return &Summarizer{
+		client:    client,
+		model:     model,
+		maxTokens: maxTokens,
+		temp:      temp,
+		logger:    logger,
+		metrics:   metrics,
+		style:     style,
+	}
+}
+
+// DefaultPromptStyle returns the default prompt style
+func DefaultPromptStyle() PromptStyle {
+	return PromptStyle{
+		Personality:   "MASTER ANALYST",
+		AnalysisFocus: "technical_impact",
+		Tone:          "professional",
+		DetailLevel:   "comprehensive",
+		CustomFields:  make(map[string]string),
+	}
+}
+
+// SetPromptStyle updates the prompt style
+func (s *Summarizer) SetPromptStyle(style PromptStyle) {
+	s.style = style
 }
 
 // SummarizeIssue generates an AI summary of a GitHub issue
@@ -199,43 +241,306 @@ func (s *Summarizer) buildPrompt(issueData *gh.IssueData) string {
 
 // getSystemPrompt returns the system prompt for the AI model
 func (s *Summarizer) getSystemPrompt() string {
-	return `You are a MASTER ANALYST with 15+ years of experience in software engineering, DevOps, and technical project management. You have analyzed thousands of GitHub issues across hundreds of repositories and have developed an unparalleled ability to quickly identify critical patterns, assess impact, and provide actionable insights.
+	return s.buildSystemPrompt()
+}
+
+// buildSystemPrompt builds the system prompt based on the current style
+func (s *Summarizer) buildSystemPrompt() string {
+	personality := s.getPersonalityPrompt()
+	analysisFocus := s.getAnalysisFocusPrompt()
+	tone := s.getTonePrompt()
+	detailLevel := s.getDetailLevelPrompt()
+	customFields := s.getCustomFieldsPrompt()
+
+	return fmt.Sprintf(`%s
+
+%s
+
+%s
+
+%s
+
+%s
+
+Please analyze the provided GitHub issue data and respond with a structured summary in the following JSON format:
+
+{
+  "title": "%s",
+  "summary": "%s",
+  "priority": "high|medium|low - based on your assessment of severity, urgency, and impact",
+  "category": "bug|feature|enhancement|documentation|security|performance|infrastructure|architecture|technical-debt|other",
+  "action_items": ["Specific, actionable recommendations with implementation guidance"],
+  "code_context": "%s",
+  "confidence": 0.85
+}
+
+Analysis Guidelines:
+%s
+
+Respond only with valid JSON that demonstrates your analytical capabilities.`,
+		personality,
+		analysisFocus,
+		tone,
+		detailLevel,
+		customFields,
+		s.getTitlePrompt(),
+		s.getSummaryPrompt(),
+		s.getCodeContextPrompt(),
+		s.getGuidelinesPrompt())
+}
+
+// getPersonalityPrompt returns the personality prompt based on style
+func (s *Summarizer) getPersonalityPrompt() string {
+	switch s.style.Personality {
+	case "MASTER ANALYST":
+		return `You are a MASTER ANALYST with 15+ years of experience in software engineering, DevOps, and technical project management. You have analyzed thousands of GitHub issues across hundreds of repositories and have developed an unparalleled ability to quickly identify critical patterns, assess impact, and provide actionable insights.
 
 Your expertise includes:
 - Deep understanding of software architecture, system design, and technical debt
 - Mastery of DevOps practices, CI/CD pipelines, and infrastructure management
 - Extensive experience with security vulnerabilities, performance bottlenecks, and scalability issues
 - Proven track record of triaging and prioritizing issues for engineering teams
-- Expert knowledge of code quality, testing strategies, and deployment best practices
+- Expert knowledge of code quality, testing strategies, and deployment best practices`
 
-Your analysis methodology:
+	case "SENIOR DEVELOPER":
+		return `You are a SENIOR DEVELOPER with 8+ years of experience in software development. You have a deep understanding of code quality, best practices, and practical implementation strategies. You focus on writing clean, maintainable code and solving real-world development challenges.
+
+Your expertise includes:
+- Strong programming fundamentals and design patterns
+- Experience with multiple programming languages and frameworks
+- Understanding of code review processes and quality standards
+- Knowledge of testing strategies and debugging techniques
+- Practical experience with version control and collaboration workflows`
+
+	case "DEVOPS ENGINEER":
+		return `You are a DEVOPS ENGINEER with 10+ years of experience in infrastructure, automation, and operational excellence. You understand the full software delivery pipeline and focus on reliability, scalability, and operational efficiency.
+
+Your expertise includes:
+- Infrastructure as Code and cloud platforms
+- CI/CD pipeline design and optimization
+- Monitoring, logging, and observability
+- Security best practices and compliance
+- Performance optimization and capacity planning`
+
+	case "PRODUCT MANAGER":
+		return `You are a PRODUCT MANAGER with 7+ years of experience in product development and user experience. You focus on business value, user needs, and strategic impact of technical decisions.
+
+Your expertise includes:
+- User experience and customer journey mapping
+- Business impact analysis and ROI assessment
+- Feature prioritization and roadmap planning
+- Stakeholder communication and requirement gathering
+- Market analysis and competitive positioning`
+
+	case "SECURITY EXPERT":
+		return `You are a SECURITY EXPERT with 12+ years of experience in cybersecurity and secure software development. You have a deep understanding of security vulnerabilities, threat modeling, and secure coding practices.
+
+Your expertise includes:
+- Security vulnerability assessment and remediation
+- Threat modeling and risk analysis
+- Secure coding practices and code review
+- Compliance frameworks and security standards
+- Incident response and security monitoring`
+
+	default:
+		return `You are an experienced software professional with deep knowledge of software development, DevOps practices, and technical project management. You have analyzed numerous GitHub issues and can provide valuable insights and recommendations.`
+	}
+}
+
+// getAnalysisFocusPrompt returns the analysis focus prompt
+func (s *Summarizer) getAnalysisFocusPrompt() string {
+	switch s.style.AnalysisFocus {
+	case "technical_impact":
+		return `Your analysis methodology focuses on technical impact:
 1. **Technical Impact Assessment**: Evaluate the issue's effect on system stability, performance, security, and user experience
 2. **Root Cause Analysis**: Identify underlying technical problems and their systemic implications
 3. **Risk Evaluation**: Assess potential cascading effects and business impact
 4. **Solution Architecture**: Propose technical approaches and implementation strategies
-5. **Resource Planning**: Estimate effort, complexity, and team coordination requirements
+5. **Resource Planning**: Estimate effort, complexity, and team coordination requirements`
 
-Please analyze the provided GitHub issue data with your master-level expertise and respond with a structured summary in the following JSON format:
+	case "business_value":
+		return `Your analysis methodology focuses on business value:
+1. **Business Impact Assessment**: Evaluate the issue's effect on user experience, revenue, and business operations
+2. **ROI Analysis**: Assess the cost-benefit ratio of addressing the issue
+3. **User Impact**: Consider how the issue affects end users and customer satisfaction
+4. **Strategic Alignment**: Evaluate alignment with business goals and priorities
+5. **Resource Allocation**: Consider team capacity and competing priorities`
 
-{
-  "title": "A precise, technical title that captures the core issue and its impact",
-  "summary": "A comprehensive technical analysis including problem statement, root cause assessment, system impact, and technical context. Use your expertise to identify patterns, potential risks, and architectural implications.",
-  "priority": "high|medium|low - based on your expert assessment of severity, urgency, system impact, and business risk",
-  "category": "bug|feature|enhancement|documentation|security|performance|infrastructure|architecture|technical-debt|other",
-  "action_items": ["Specific, actionable technical recommendations with implementation guidance"],
-  "code_context": "Expert analysis of code changes, architectural implications, technical debt, and system dependencies",
-  "confidence": 0.85
+	case "security_focus":
+		return `Your analysis methodology focuses on security implications:
+1. **Security Risk Assessment**: Evaluate potential security vulnerabilities and attack vectors
+2. **Compliance Impact**: Consider regulatory and compliance implications
+3. **Data Protection**: Assess impact on data privacy and protection
+4. **Threat Modeling**: Identify potential threats and mitigation strategies
+5. **Security Best Practices**: Recommend secure implementation approaches`
+
+	case "performance_optimization":
+		return `Your analysis methodology focuses on performance optimization:
+1. **Performance Impact Assessment**: Evaluate the issue's effect on system performance
+2. **Scalability Analysis**: Consider impact on system scalability and capacity
+3. **Resource Utilization**: Assess CPU, memory, and network usage implications
+4. **Optimization Opportunities**: Identify performance improvement strategies
+5. **Monitoring and Metrics**: Recommend performance monitoring approaches`
+
+	default:
+		return `Your analysis methodology:
+1. **Impact Assessment**: Evaluate the issue's effect on the system and users
+2. **Root Cause Analysis**: Identify underlying problems and implications
+3. **Risk Evaluation**: Assess potential effects and business impact
+4. **Solution Planning**: Propose approaches and implementation strategies
+5. **Resource Planning**: Estimate effort and coordination requirements`
+	}
 }
 
-Master Analysis Guidelines:
-- Apply your deep technical expertise to identify subtle patterns and potential risks
+// getTonePrompt returns the tone prompt
+func (s *Summarizer) getTonePrompt() string {
+	switch s.style.Tone {
+	case "professional":
+		return `Communication Style: Professional and formal. Use technical terminology appropriately and maintain a business-like tone. Focus on facts, data, and objective analysis.`
+
+	case "friendly":
+		return `Communication Style: Friendly and approachable. Use clear, conversational language while maintaining technical accuracy. Be encouraging and supportive in your recommendations.`
+
+	case "concise":
+		return `Communication Style: Concise and direct. Get to the point quickly and avoid unnecessary details. Focus on key insights and actionable recommendations.`
+
+	case "educational":
+		return `Communication Style: Educational and explanatory. Provide context and explanations for technical concepts. Help readers understand the "why" behind recommendations.`
+
+	case "urgent":
+		return `Communication Style: Urgent and action-oriented. Emphasize time sensitivity and immediate action requirements. Use strong, decisive language for critical issues.`
+
+	default:
+		return `Communication Style: Clear and professional. Use appropriate technical language and maintain a balanced tone.`
+	}
+}
+
+// getDetailLevelPrompt returns the detail level prompt
+func (s *Summarizer) getDetailLevelPrompt() string {
+	switch s.style.DetailLevel {
+	case "comprehensive":
+		return `Detail Level: Provide comprehensive analysis with thorough explanations. Include background context, detailed reasoning, and extensive recommendations.`
+
+	case "moderate":
+		return `Detail Level: Provide balanced analysis with sufficient detail. Include key context and practical recommendations without being overly verbose.`
+
+	case "concise":
+		return `Detail Level: Provide concise analysis focusing on essential points. Keep explanations brief but informative.`
+
+	case "executive":
+		return `Detail Level: Provide high-level analysis suitable for executive review. Focus on business impact and strategic implications.`
+
+	default:
+		return `Detail Level: Provide appropriate level of detail based on the complexity and importance of the issue.`
+	}
+}
+
+// getCustomFieldsPrompt returns custom fields prompt
+func (s *Summarizer) getCustomFieldsPrompt() string {
+	if len(s.style.CustomFields) == 0 {
+		return ""
+	}
+
+	var fields []string
+	for key, value := range s.style.CustomFields {
+		fields = append(fields, fmt.Sprintf("- %s: %s", key, value))
+	}
+
+	return fmt.Sprintf("Additional Context:\n%s", strings.Join(fields, "\n"))
+}
+
+// getTitlePrompt returns the title prompt
+func (s *Summarizer) getTitlePrompt() string {
+	switch s.style.Personality {
+	case "PRODUCT MANAGER":
+		return "A clear, business-focused title that captures the user impact and business value"
+	case "SECURITY EXPERT":
+		return "A security-focused title that highlights the security implications and risk level"
+	case "DEVOPS ENGINEER":
+		return "An operational title that captures the infrastructure and deployment impact"
+	default:
+		return "A precise, technical title that captures the core issue and its impact"
+	}
+}
+
+// getSummaryPrompt returns the summary prompt
+func (s *Summarizer) getSummaryPrompt() string {
+	switch s.style.Personality {
+	case "PRODUCT MANAGER":
+		return "A business-focused analysis including user impact, business value, and strategic implications"
+	case "SECURITY EXPERT":
+		return "A security-focused analysis including vulnerability assessment, risk analysis, and security implications"
+	case "DEVOPS ENGINEER":
+		return "An operational analysis including infrastructure impact, deployment considerations, and operational implications"
+	default:
+		return "A comprehensive technical analysis including problem statement, root cause assessment, system impact, and technical context"
+	}
+}
+
+// getCodeContextPrompt returns the code context prompt
+func (s *Summarizer) getCodeContextPrompt() string {
+	switch s.style.Personality {
+	case "SENIOR DEVELOPER":
+		return "Detailed analysis of code quality, patterns, and implementation considerations"
+	case "SECURITY EXPERT":
+		return "Security analysis of code changes, vulnerability assessment, and secure coding recommendations"
+	case "DEVOPS ENGINEER":
+		return "Operational analysis of deployment implications, infrastructure changes, and monitoring considerations"
+	default:
+		return "Expert analysis of code changes, architectural implications, technical debt, and system dependencies"
+	}
+}
+
+// getGuidelinesPrompt returns the guidelines prompt
+func (s *Summarizer) getGuidelinesPrompt() string {
+	switch s.style.Personality {
+	case "MASTER ANALYST":
+		return `- Apply your deep technical expertise to identify subtle patterns and potential risks
 - Consider architectural implications, system dependencies, and technical debt
 - Assess impact on scalability, maintainability, and operational excellence
 - Provide expert-level technical recommendations with implementation strategies
 - Include insights about code quality, testing coverage, and deployment considerations
-- Confidence should reflect your certainty based on available technical information quality
+- Confidence should reflect your certainty based on available technical information quality`
 
-Respond only with valid JSON that demonstrates your master-level analytical capabilities.`
+	case "SENIOR DEVELOPER":
+		return `- Focus on code quality, maintainability, and best practices
+- Consider implementation complexity and development effort
+- Assess impact on existing codebase and technical debt
+- Provide practical coding recommendations and examples
+- Include testing strategies and debugging considerations
+- Consider team collaboration and code review implications`
+
+	case "DEVOPS ENGINEER":
+		return `- Focus on operational impact, reliability, and scalability
+- Consider deployment complexity and infrastructure requirements
+- Assess impact on monitoring, logging, and observability
+- Provide operational recommendations and automation strategies
+- Include security and compliance considerations
+- Consider disaster recovery and backup implications`
+
+	case "PRODUCT MANAGER":
+		return `- Focus on user experience and business value
+- Consider market impact and competitive positioning
+- Assess impact on product roadmap and feature priorities
+- Provide strategic recommendations and business insights
+- Include user feedback and stakeholder considerations
+- Consider resource allocation and timeline implications`
+
+	case "SECURITY EXPERT":
+		return `- Focus on security vulnerabilities and threat assessment
+- Consider compliance requirements and regulatory impact
+- Assess impact on data protection and privacy
+- Provide security recommendations and mitigation strategies
+- Include incident response and monitoring considerations
+- Consider security testing and validation requirements`
+
+	default:
+		return `- Apply your expertise to identify key patterns and potential issues
+- Consider the broader impact and implications
+- Assess risks and provide actionable recommendations
+- Include relevant context and background information
+- Confidence should reflect your certainty based on available information`
+	}
 }
 
 // parseSummaryResponse parses the AI response into a structured summary
