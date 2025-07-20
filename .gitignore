@@ -148,3 +148,4 @@ benchmark.out
 # Local development overrides
 docker-compose.override.yml
 docker-compose.local.yml 
+.bolt
