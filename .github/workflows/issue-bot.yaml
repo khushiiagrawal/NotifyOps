@@ -4,9 +4,9 @@ on:
   issue_comment:
     types: [created]
   issues:
-    types: [opened, edited, reopened]
+    types: [opened, edited, reopened, labeled, unlabeled, closed, reopened]
   pull_request:
-    types: [opened, edited, reopened]
+    types: [opened, edited, reopened, labeled, unlabeled, closed, reopened]
     branches: [main, ci]
 
 jobs:
