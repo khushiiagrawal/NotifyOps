@@ -136,6 +136,15 @@ async function mentionUser(username) {
   });
 }
 
+async function addLgtmLabel() {
+  await octokit.request('POST /repos/{owner}/{repo}/issues/{issue_number}/labels', {
+    owner: repo.owner.login,
+    repo: repo.name,
+    issue_number: target.number,
+    labels: ['lgtm'],
+  });
+}
+
 function helpText() {
   return `
 **Available Commands:**
@@ -201,6 +210,10 @@ async function main() {
         await postComment(helpText());
       } else if (/^\/cc$/i.test(command)) {
         await mentionUser(commenter);
+      } else if (/^\/lgtm$/i.test(command)) {
+        if (isPR && isCodeOwner(commenter)) {
+          await addLgtmLabel();
+        }
       }
     } catch (error) {
       // Silently ignore errors
