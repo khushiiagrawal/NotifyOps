@@ -41,6 +41,17 @@ services:
       - monitoring
     restart: unless-stopped
 
+  # Next.js Web App
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./web:/app
+    networks:
+      - monitoring
+    restart: unless-stopped
+
   # Prometheus for metrics collection
   prometheus:
     image: prom/prometheus:latest
