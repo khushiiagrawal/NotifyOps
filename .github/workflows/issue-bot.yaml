@@ -24,7 +24,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm ci && npm install @octokit/core @actions/github
+        run: npm install @octokit/core @actions/github
 
       - name: Run the bot
         env:
