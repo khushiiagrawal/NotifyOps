@@ -19,6 +19,12 @@ const event = JSON.parse(fs.readFileSync(payloadPath, "utf8"));
 const issue = event.issue;
 const comment = event.comment;
 const repo = event.repository;
+
+if (!comment || !comment.user) {
+  console.error("Error: 'comment' or 'comment.user' is undefined. Event payload:", JSON.stringify(event, null, 2));
+  process.exit(1);
+}
+
 const commenter = comment.user.login;
 const commentBody = comment.body.trim();
 
