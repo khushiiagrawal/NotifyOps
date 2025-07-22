@@ -46,8 +46,9 @@ try {
   codeOwners = [];
 }
 
-const isPR = !!event.pull_request;
-const target = isPR ? event.pull_request : event.issue;
+// Use event.issue for both issues and PRs. If event.issue.pull_request exists, it's a PR.
+const isPR = !!(event.issue && event.issue.pull_request);
+const target = event.issue;
 const author = target.user.login;
 
 function isCodeOwner(username) {
