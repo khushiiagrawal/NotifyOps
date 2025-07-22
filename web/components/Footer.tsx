@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { motion } from 'framer-motion';
 import { Github, Twitter, MessageCircle, Mail, ArrowUp } from 'lucide-react';
@@ -10,23 +10,23 @@ export function Footer() {
 
   const footerLinks = {
     product: [
-      { name: "Features", href: "#features" },
-      { name: "AI Personalities", href: "#ai-personalities" },
-      { name: "Architecture", href: "#architecture" },
-      { name: "Monitoring", href: "#monitoring" },
+      { name: 'Features', href: '#features' },
+      { name: 'AI Personalities', href: '#ai-personalities' },
+      { name: 'Architecture', href: '#architecture' },
+      { name: 'Monitoring', href: '#monitoring' },
     ],
     resources: [
-      { name: "Documentation", href: "#" },
-      { name: "GitHub", href: "#" },
-      { name: "Community", href: "#" },
-      { name: "Blog", href: "#" },
+      { name: 'Documentation', href: '#' },
+      { name: 'GitHub', href: '#' },
+      { name: 'Community', href: '#' },
+      { name: 'Blog', href: '#' },
     ],
     company: [
-      { name: "About", href: "#" },
-      { name: "Contact", href: "#contact" },
-      { name: "Privacy", href: "#" },
-      { name: "Terms", href: "#" },
-    ]
+      { name: 'About', href: '#' },
+      { name: 'Contact', href: '#contact' },
+      { name: 'Privacy', href: '#' },
+      { name: 'Terms', href: '#' },
+    ],
   };
 
   return (
@@ -52,15 +52,15 @@ export function Footer() {
                   </span>
                 </div>
                 <p className="text-gray-400 leading-relaxed">
-                  AI-powered GitHub issue intelligence for modern development teams. 
-                  Transform issues into actionable insights with real-time Slack notifications.
+                  AI-powered GitHub issue intelligence for modern development teams. Transform
+                  issues into actionable insights with real-time Slack notifications.
                 </p>
                 <div className="flex space-x-4">
                   {[
-                    { icon: Github, href: "#", label: "GitHub" },
-                    { icon: Twitter, href: "#", label: "Twitter" },
-                    { icon: MessageCircle, href: "#", label: "Discord" },
-                    { icon: Mail, href: "#contact", label: "Contact" }
+                    { icon: Github, href: '#', label: 'GitHub' },
+                    { icon: Twitter, href: '#', label: 'Twitter' },
+                    { icon: MessageCircle, href: '#', label: 'Discord' },
+                    { icon: Mail, href: '#contact', label: 'Contact' },
                   ].map((social) => (
                     <a
                       key={social.label}
@@ -84,9 +84,7 @@ export function Footer() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                 >
-                  <h3 className="text-white font-semibold mb-4 capitalize">
-                    {category}
-                  </h3>
+                  <h3 className="text-white font-semibold mb-4 capitalize">{category}</h3>
                   <ul className="space-y-3">
                     {links.map((link) => (
                       <li key={link.name}>
@@ -108,16 +106,14 @@ export function Footer() {
         {/* Bottom Section */}
         <div className="py-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-            <div className="text-gray-400 text-sm">
-              © 2024 NotifyOps. All rights reserved.
-            </div>
-            
+            <div className="text-gray-400 text-sm">© 2024 NotifyOps. All rights reserved.</div>
+
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-2 text-gray-400 text-sm">
                 <div className="w-2 h-2 bg-[#10b981] rounded-full animate-pulse" />
                 <span>All systems operational</span>
               </div>
-              
+
               <button
                 onClick={scrollToTop}
                 className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200"

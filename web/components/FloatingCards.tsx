@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { motion } from 'framer-motion';
 import { Bug, GitBranch, AlertTriangle, CheckCircle } from 'lucide-react';
@@ -7,32 +7,32 @@ export function FloatingCards() {
   const cards = [
     {
       icon: Bug,
-      title: "Critical Bug",
-      status: "High Priority",
-      color: "from-red-500 to-pink-500",
-      delay: 0
+      title: 'Critical Bug',
+      status: 'High Priority',
+      color: 'from-red-500 to-pink-500',
+      delay: 0,
     },
     {
       icon: GitBranch,
-      title: "Feature Request",
-      status: "In Progress",
-      color: "from-blue-500 to-purple-500",
-      delay: 0.5
+      title: 'Feature Request',
+      status: 'In Progress',
+      color: 'from-blue-500 to-purple-500',
+      delay: 0.5,
     },
     {
       icon: AlertTriangle,
-      title: "Security Issue",
-      status: "Urgent",
-      color: "from-orange-500 to-red-500",
-      delay: 1
+      title: 'Security Issue',
+      status: 'Urgent',
+      color: 'from-orange-500 to-red-500',
+      delay: 1,
     },
     {
       icon: CheckCircle,
-      title: "Enhancement",
-      status: "Completed",
-      color: "from-green-500 to-teal-500",
-      delay: 1.5
-    }
+      title: 'Enhancement',
+      status: 'Completed',
+      color: 'from-green-500 to-teal-500',
+      delay: 1.5,
+    },
   ];
 
   return (
@@ -41,26 +41,26 @@ export function FloatingCards() {
         <motion.div
           key={card.title}
           initial={{ opacity: 0, y: 100, rotate: -10 }}
-          animate={{ 
-            opacity: 0.8, 
-            y: 0, 
+          animate={{
+            opacity: 0.8,
+            y: 0,
             rotate: 0,
             x: [0, 20, -20, 0],
           }}
-          transition={{ 
+          transition={{
             duration: 2,
             delay: card.delay,
             x: {
               duration: 4,
               repeat: Infinity,
-              ease: "easeInOut"
-            }
+              ease: 'easeInOut',
+            },
           }}
           className={`absolute bg-gradient-to-r ${card.color} p-4 rounded-lg backdrop-blur-sm border border-white/20 shadow-lg`}
           style={{
             left: `${20 + index * 15}%`,
             top: `${30 + index * 10}%`,
-            transform: `rotate(${-5 + index * 3}deg)`
+            transform: `rotate(${-5 + index * 3}deg)`,
           }}
         >
           <div className="flex items-center space-x-3">

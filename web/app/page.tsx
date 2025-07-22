@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { HeroSection } from '@/components/sections/HeroSection';
 import { FeaturesSection } from '@/components/sections/FeaturesSection';
@@ -29,7 +29,7 @@ export default function Home() {
         <ContactSection />
       </main>
       <Footer />
-      <Toaster 
+      <Toaster
         position="bottom-right"
         toastOptions={{
           style: {

@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { 
-  Terminal, 
-  Copy, 
-  CheckCircle, 
-  Github, 
-  Settings, 
+import {
+  Terminal,
+  Copy,
+  CheckCircle,
+  Github,
+  Settings,
   Webhook,
   Key,
   MessageCircle,
-  Download
+  Download,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function SetupSection() {
   const [ref, inView] = useInView({
     triggerOnce: true,
-    threshold: 0.1
+    threshold: 0.1,
   });
 
   const [activeStep, setActiveStep] = useState(0);
@@ -28,19 +28,19 @@ export function SetupSection() {
   const setupSteps = [
     {
       icon: Download,
-      title: "Clone Repository",
-      description: "Get the NotifyOps source code",
+      title: 'Clone Repository',
+      description: 'Get the NotifyOps source code',
       code: `git clone https://github.com/notifyops/notifyops.git
 cd notifyops`,
-      config: null
+      config: null,
     },
     {
       icon: Settings,
-      title: "Environment Setup",
-      description: "Configure your environment variables",
+      title: 'Environment Setup',
+      description: 'Configure your environment variables',
       code: `cp .env.example .env`,
       config: {
-        title: "Environment Variables",
+        title: 'Environment Variables',
         content: `# GitHub Configuration
 GITHUB_WEBHOOK_SECRET=your-webhook-secret
 
@@ -54,13 +54,13 @@ SLACK_WEBHOOK_URL=https://hooks.slack.com/your-webhook
 
 # Monitoring
 PROMETHEUS_PORT=9090
-GRAFANA_PORT=3000`
-      }
+GRAFANA_PORT=3000`,
+      },
     },
     {
       icon: Webhook,
-      title: "GitHub Webhook",
-      description: "Configure GitHub webhook for your repository",
+      title: 'GitHub Webhook',
+      description: 'Configure GitHub webhook for your repository',
       code: `# Webhook URL
 https://your-domain.com/webhook/github
 
@@ -69,7 +69,7 @@ https://your-domain.com/webhook/github
 - Issue comments
 - Pull requests`,
       config: {
-        title: "Webhook Settings",
+        title: 'Webhook Settings',
         content: `Payload URL: https://your-domain.com/webhook/github
 Content type: application/json
 Secret: your-webhook-secret
@@ -79,20 +79,20 @@ Events:
 ☑️ Issues
 ☑️ Issue comments  
 ☑️ Pull requests
-☑️ Pull request reviews`
-      }
+☑️ Pull request reviews`,
+      },
     },
     {
       icon: Key,
-      title: "API Keys Setup",
-      description: "Configure OpenAI and Slack credentials",
+      title: 'API Keys Setup',
+      description: 'Configure OpenAI and Slack credentials',
       code: `# Get your OpenAI API key from:
 # https://platform.openai.com/api-keys
 
 # Create Slack app and get bot token:
 # https://api.slack.com/apps`,
       config: {
-        title: "Required Permissions",
+        title: 'Required Permissions',
         content: `Slack Bot Token Scopes:
 - chat:write
 - chat:write.public
@@ -103,13 +103,13 @@ Events:
 
 OpenAI:
 - API key with GPT-4 access
-- Sufficient token quota`
-      }
+- Sufficient token quota`,
+      },
     },
     {
       icon: Terminal,
-      title: "Deploy with Docker",
-      description: "Start all services with Docker Compose",
+      title: 'Deploy with Docker',
+      description: 'Start all services with Docker Compose',
       code: `# Build and start all services
 docker-compose up -d
 
@@ -118,8 +118,8 @@ docker-compose logs -f notifyops
 
 # Stop services
 docker-compose down`,
-      config: null
-    }
+      config: null,
+    },
   ];
 
   const copyToClipboard = (text: string, identifier: string) => {
@@ -132,7 +132,7 @@ docker-compose down`,
     <section id="setup" className="py-20 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0f0f23] via-[#1a1a3e]/60 to-[#0f0f23]" />
-      
+
       <div ref={ref} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -176,11 +176,13 @@ docker-compose down`,
                 }`}
               >
                 <div className="flex items-center space-x-3">
-                  <div className={`w-10 h-10 rounded-lg p-2 flex items-center justify-center ${
-                    activeStep === index
-                      ? 'bg-gradient-to-r from-[#4f46e5] to-[#7c3aed]'
-                      : 'bg-white/10'
-                  }`}>
+                  <div
+                    className={`w-10 h-10 rounded-lg p-2 flex items-center justify-center ${
+                      activeStep === index
+                        ? 'bg-gradient-to-r from-[#4f46e5] to-[#7c3aed]'
+                        : 'bg-white/10'
+                    }`}
+                  >
                     <step.icon className="w-full h-full text-white" />
                   </div>
                   <div>
@@ -217,7 +219,9 @@ docker-compose down`,
                     <span className="text-sm text-gray-400">Terminal</span>
                   </div>
                   <Button
-                    onClick={() => copyToClipboard(setupSteps[activeStep].code, `step-${activeStep}`)}
+                    onClick={() =>
+                      copyToClipboard(setupSteps[activeStep].code, `step-${activeStep}`)
+                    }
                     variant="ghost"
                     size="sm"
                     className="text-gray-400 hover:text-white"
@@ -247,7 +251,12 @@ docker-compose down`,
                       </span>
                     </div>
                     <Button
-                      onClick={() => copyToClipboard(setupSteps[activeStep].config!.content, `config-${activeStep}`)}
+                      onClick={() =>
+                        copyToClipboard(
+                          setupSteps[activeStep].config!.content,
+                          `config-${activeStep}`,
+                        )
+                      }
                       variant="ghost"
                       size="sm"
                       className="text-gray-400 hover:text-white"
@@ -276,7 +285,7 @@ docker-compose down`,
               >
                 Previous
               </Button>
-              
+
               <div className="flex space-x-2">
                 {setupSteps.map((_, index) => (
                   <div
@@ -309,22 +318,22 @@ docker-compose down`,
           {[
             {
               icon: Github,
-              title: "GitHub Repository",
-              description: "View source code and documentation",
-              link: "https://github.com/notifyops/notifyops"
+              title: 'GitHub Repository',
+              description: 'View source code and documentation',
+              link: 'https://github.com/notifyops/notifyops',
             },
             {
               icon: MessageCircle,
-              title: "Community Support",
-              description: "Join our Discord for help and discussions",
-              link: "https://discord.gg/notifyops"
+              title: 'Community Support',
+              description: 'Join our Discord for help and discussions',
+              link: 'https://discord.gg/notifyops',
             },
             {
               icon: Settings,
-              title: "Documentation",
-              description: "Complete setup and configuration guide",
-              link: "https://docs.notifyops.com"
-            }
+              title: 'Documentation',
+              description: 'Complete setup and configuration guide',
+              link: 'https://docs.notifyops.com',
+            },
           ].map((link, index) => (
             <motion.div
               key={link.title}
@@ -341,9 +350,7 @@ docker-compose down`,
                   <h3 className="font-semibold text-white mb-2 group-hover:text-gray-100 transition-colors">
                     {link.title}
                   </h3>
-                  <p className="text-gray-300 text-sm leading-relaxed">
-                    {link.description}
-                  </p>
+                  <p className="text-gray-300 text-sm leading-relaxed">{link.description}</p>
                 </div>
               </div>
             </motion.div>

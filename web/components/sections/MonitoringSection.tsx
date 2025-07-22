@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -8,14 +8,14 @@ import { BarChart3, Activity, Clock, AlertTriangle } from 'lucide-react';
 export function MonitoringSection() {
   const [ref, inView] = useInView({
     triggerOnce: true,
-    threshold: 0.1
+    threshold: 0.1,
   });
 
   const [metrics, setMetrics] = useState({
     requestRate: 1250,
     responseTime: 85,
     uptime: 99.9,
-    activeConnections: 156
+    activeConnections: 156,
   });
 
   const [chartData, setChartData] = useState<number[]>([]);
@@ -23,14 +23,17 @@ export function MonitoringSection() {
   useEffect(() => {
     // Simulate real-time metrics
     const interval = setInterval(() => {
-      setMetrics(prev => ({
+      setMetrics((prev) => ({
         requestRate: prev.requestRate + Math.floor(Math.random() * 100 - 50),
         responseTime: Math.max(50, prev.responseTime + Math.floor(Math.random() * 20 - 10)),
         uptime: 99.9,
-        activeConnections: Math.max(100, prev.activeConnections + Math.floor(Math.random() * 20 - 10))
+        activeConnections: Math.max(
+          100,
+          prev.activeConnections + Math.floor(Math.random() * 20 - 10),
+        ),
       }));
 
-      setChartData(prev => {
+      setChartData((prev) => {
         const newData = [...prev, Math.random() * 100];
         return newData.slice(-20); // Keep last 20 points
       });
@@ -42,35 +45,35 @@ export function MonitoringSection() {
   const monitoringFeatures = [
     {
       icon: BarChart3,
-      title: "Prometheus Metrics",
-      description: "Comprehensive metrics collection for all system components",
-      color: "from-[#e6522c] to-[#f46800]"
+      title: 'Prometheus Metrics',
+      description: 'Comprehensive metrics collection for all system components',
+      color: 'from-[#e6522c] to-[#f46800]',
     },
     {
       icon: Activity,
-      title: "Grafana Dashboards",
-      description: "Beautiful visualizations and real-time monitoring",
-      color: "from-[#f46800] to-[#fb923c]"
+      title: 'Grafana Dashboards',
+      description: 'Beautiful visualizations and real-time monitoring',
+      color: 'from-[#f46800] to-[#fb923c]',
     },
     {
       icon: Clock,
-      title: "Performance Tracking",
-      description: "Response times, throughput, and latency monitoring",
-      color: "from-[#10b981] to-[#06b6d4]"
+      title: 'Performance Tracking',
+      description: 'Response times, throughput, and latency monitoring',
+      color: 'from-[#10b981] to-[#06b6d4]',
     },
     {
       icon: AlertTriangle,
-      title: "Smart Alerting",
-      description: "Intelligent alerts with context and recommended actions",
-      color: "from-[#f59e0b] to-[#f97316]"
-    }
+      title: 'Smart Alerting',
+      description: 'Intelligent alerts with context and recommended actions',
+      color: 'from-[#f59e0b] to-[#f97316]',
+    },
   ];
 
   return (
     <section id="monitoring" className="py-20 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0f0f23] via-[#1a1a3e]/80 to-[#0f0f23]" />
-      
+
       <div ref={ref} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -88,7 +91,8 @@ export function MonitoringSection() {
             </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Complete observability with Prometheus metrics, Grafana dashboards, and intelligent alerting
+            Complete observability with Prometheus metrics, Grafana dashboards, and intelligent
+            alerting
           </p>
         </motion.div>
 
@@ -109,16 +113,16 @@ export function MonitoringSection() {
                 className="group"
               >
                 <div className="flex items-start space-x-4 p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${feature.color} p-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                  <div
+                    className={`w-12 h-12 rounded-lg bg-gradient-to-r ${feature.color} p-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}
+                  >
                     <feature.icon className="w-full h-full text-white" />
                   </div>
                   <div>
                     <h3 className="font-bold text-white mb-2 group-hover:text-gray-100 transition-colors">
                       {feature.title}
                     </h3>
-                    <p className="text-gray-300 leading-relaxed">
-                      {feature.description}
-                    </p>
+                    <p className="text-gray-300 leading-relaxed">{feature.description}</p>
                   </div>
                 </div>
               </motion.div>
@@ -144,7 +148,9 @@ export function MonitoringSection() {
                   <span className="text-sm text-gray-400">Request Rate</span>
                   <BarChart3 className="w-4 h-4 text-[#4f46e5]" />
                 </div>
-                <div className="text-2xl font-bold text-white">{metrics.requestRate.toLocaleString()}</div>
+                <div className="text-2xl font-bold text-white">
+                  {metrics.requestRate.toLocaleString()}
+                </div>
                 <div className="text-xs text-gray-400">requests/min</div>
               </motion.div>
 

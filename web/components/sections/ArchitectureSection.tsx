@@ -1,105 +1,105 @@
-"use client";
+'use client';
 
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { 
-  ArrowRight, 
-  Github, 
-  Brain, 
-  MessageCircle, 
+import {
+  ArrowRight,
+  Github,
+  Brain,
+  MessageCircle,
   BarChart3,
   Server,
   Database,
-  Cloud
+  Cloud,
 } from 'lucide-react';
 
 export function ArchitectureSection() {
   const [ref, inView] = useInView({
     triggerOnce: true,
-    threshold: 0.1
+    threshold: 0.1,
   });
 
   const flowSteps = [
     {
       icon: Github,
-      title: "GitHub Webhook",
-      description: "Issue events trigger real-time processing",
-      color: "from-[#24292e] to-[#586069]"
+      title: 'GitHub Webhook',
+      description: 'Issue events trigger real-time processing',
+      color: 'from-[#24292e] to-[#586069]',
     },
     {
       icon: Server,
-      title: "Go Service",
-      description: "High-performance webhook processing",
-      color: "from-[#00add8] to-[#5dc9e2]"
+      title: 'Go Service',
+      description: 'High-performance webhook processing',
+      color: 'from-[#00add8] to-[#5dc9e2]',
     },
     {
       icon: Brain,
-      title: "OpenAI API",
-      description: "AI-powered analysis and summarization",
-      color: "from-[#10a37f] to-[#26d0ce]"
+      title: 'OpenAI API',
+      description: 'AI-powered analysis and summarization',
+      color: 'from-[#10a37f] to-[#26d0ce]',
     },
     {
       icon: MessageCircle,
-      title: "Slack Integration",
-      description: "Rich notifications with action buttons",
-      color: "from-[#4a154b] to-[#350d36]"
+      title: 'Slack Integration',
+      description: 'Rich notifications with action buttons',
+      color: 'from-[#4a154b] to-[#350d36]',
     },
     {
       icon: BarChart3,
-      title: "Monitoring",
-      description: "Prometheus metrics & Grafana dashboards",
-      color: "from-[#e6522c] to-[#f46800]"
-    }
+      title: 'Monitoring',
+      description: 'Prometheus metrics & Grafana dashboards',
+      color: 'from-[#e6522c] to-[#f46800]',
+    },
   ];
 
   const components = [
     {
-      name: "Load Balancer",
-      description: "High availability traffic distribution",
-      position: { top: "10%", left: "10%" }
+      name: 'Load Balancer',
+      description: 'High availability traffic distribution',
+      position: { top: '10%', left: '10%' },
     },
     {
-      name: "API Gateway",
-      description: "Request routing and authentication",
-      position: { top: "10%", right: "10%" }
+      name: 'API Gateway',
+      description: 'Request routing and authentication',
+      position: { top: '10%', right: '10%' },
     },
     {
-      name: "Webhook Service",
-      description: "GitHub event processing",
-      position: { top: "40%", left: "15%" }
+      name: 'Webhook Service',
+      description: 'GitHub event processing',
+      position: { top: '40%', left: '15%' },
     },
     {
-      name: "AI Service",
-      description: "OpenAI integration layer",
-      position: { top: "40%", right: "15%" }
+      name: 'AI Service',
+      description: 'OpenAI integration layer',
+      position: { top: '40%', right: '15%' },
     },
     {
-      name: "Notification Service",
-      description: "Slack message delivery",
-      position: { bottom: "40%", left: "15%" }
+      name: 'Notification Service',
+      description: 'Slack message delivery',
+      position: { bottom: '40%', left: '15%' },
     },
     {
-      name: "Metrics Service",
-      description: "Prometheus data collection",
-      position: { bottom: "40%", right: "15%" }
+      name: 'Metrics Service',
+      description: 'Prometheus data collection',
+      position: { bottom: '40%', right: '15%' },
     },
     {
-      name: "Database",
-      description: "Configuration and state storage",
-      position: { bottom: "10%", left: "10%" }
+      name: 'Database',
+      description: 'Configuration and state storage',
+      position: { bottom: '10%', left: '10%' },
     },
     {
-      name: "Cache Layer",
-      description: "Redis for performance optimization",
-      position: { bottom: "10%", right: "10%" }
-    }
+      name: 'Cache Layer',
+      description: 'Redis for performance optimization',
+      position: { bottom: '10%', right: '10%' },
+    },
   ];
 
   return (
     <section id="architecture" className="py-20 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0f0f23] via-[#1a1a3e] to-[#0f0f23]" />
-      
+
       <div ref={ref} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -117,14 +117,15 @@ export function ArchitectureSection() {
             </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Enterprise-grade architecture designed for high availability, scalability, and real-time processing
+            Enterprise-grade architecture designed for high availability, scalability, and real-time
+            processing
           </p>
         </motion.div>
 
         {/* Data Flow Visualization */}
         <div className="mb-20">
           <h3 className="text-2xl font-bold text-white text-center mb-12">Data Flow Pipeline</h3>
-          
+
           <div className="flex flex-col lg:flex-row items-center justify-between space-y-8 lg:space-y-0 lg:space-x-4">
             {flowSteps.map((step, index) => (
               <motion.div
@@ -136,17 +137,21 @@ export function ArchitectureSection() {
               >
                 {/* Step Card */}
                 <div className="group relative">
-                  <div className={`w-24 h-24 rounded-2xl bg-gradient-to-r ${step.color} p-6 mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                  <div
+                    className={`w-24 h-24 rounded-2xl bg-gradient-to-r ${step.color} p-6 mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
+                  >
                     <step.icon className="w-full h-full text-white" />
                   </div>
-                  
+
                   <div className="text-center max-w-xs">
                     <h4 className="font-semibold text-white mb-2">{step.title}</h4>
                     <p className="text-sm text-gray-400">{step.description}</p>
                   </div>
 
                   {/* Glow Effect */}
-                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${step.color} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300 pointer-events-none`} />
+                  <div
+                    className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${step.color} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300 pointer-events-none`}
+                  />
                 </div>
 
                 {/* Arrow */}
@@ -158,11 +163,11 @@ export function ArchitectureSection() {
                     className="hidden lg:block absolute -right-8 top-12"
                   >
                     <ArrowRight className="w-6 h-6 text-gray-400" />
-                    
+
                     {/* Animated Particles */}
                     <motion.div
                       animate={{ x: [0, 32, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                       className="absolute top-2 left-2 w-2 h-2 bg-gradient-to-r from-[#4f46e5] to-[#7c3aed] rounded-full"
                     />
                   </motion.div>
@@ -175,14 +180,17 @@ export function ArchitectureSection() {
         {/* 3D Architecture Diagram */}
         <div className="relative">
           <h3 className="text-2xl font-bold text-white text-center mb-12">System Components</h3>
-          
+
           <div className="relative h-96 bg-gradient-to-br from-[#1a1a3e]/30 to-[#0f0f23]/30 rounded-3xl border border-white/10 backdrop-blur-sm overflow-hidden">
             {/* Grid Background */}
             <div className="absolute inset-0 opacity-10">
-              <div className="absolute inset-0" style={{
-                backgroundImage: `radial-gradient(circle at 25px 25px, rgba(255,255,255,0.2) 2px, transparent 0)`,
-                backgroundSize: '50px 50px'
-              }} />
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: `radial-gradient(circle at 25px 25px, rgba(255,255,255,0.2) 2px, transparent 0)`,
+                  backgroundSize: '50px 50px',
+                }}
+              />
             </div>
 
             {/* Components */}
@@ -202,7 +210,7 @@ export function ArchitectureSection() {
                       <Server className="w-5 h-5 text-white" />
                     </div>
                   </div>
-                  
+
                   {/* Tooltip */}
                   <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                     <div className="bg-black/90 backdrop-blur-sm text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap border border-white/20">
@@ -241,7 +249,7 @@ export function ArchitectureSection() {
                   <div className="text-white/80 text-xs">Core</div>
                 </div>
               </div>
-              
+
               {/* Pulsing Ring */}
               <motion.div
                 animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.2, 0.5] }}
@@ -261,19 +269,22 @@ export function ArchitectureSection() {
         >
           {[
             {
-              title: "Performance",
-              specs: ["< 100ms response time", "10k+ requests/minute", "99.9% uptime SLA"]
+              title: 'Performance',
+              specs: ['< 100ms response time', '10k+ requests/minute', '99.9% uptime SLA'],
             },
             {
-              title: "Scalability",
-              specs: ["Horizontal auto-scaling", "Load balancing", "Multi-region deployment"]
+              title: 'Scalability',
+              specs: ['Horizontal auto-scaling', 'Load balancing', 'Multi-region deployment'],
             },
             {
-              title: "Security",
-              specs: ["End-to-end encryption", "OAuth 2.0 / JWT", "SOC 2 compliant"]
-            }
+              title: 'Security',
+              specs: ['End-to-end encryption', 'OAuth 2.0 / JWT', 'SOC 2 compliant'],
+            },
           ].map((category, index) => (
-            <div key={category.title} className="p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+            <div
+              key={category.title}
+              className="p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10"
+            >
               <h4 className="font-bold text-white mb-4">{category.title}</h4>
               <ul className="space-y-2">
                 {category.specs.map((spec, specIndex) => (

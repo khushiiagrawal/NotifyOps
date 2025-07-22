@@ -6,12 +6,14 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'NotifyOps - AI-Powered GitHub Issue Intelligence',
-  description: 'Transform GitHub issues into actionable insights with AI-powered analysis and real-time Slack notifications. Intelligent issue processing for modern development teams.',
+  description:
+    'Transform GitHub issues into actionable insights with AI-powered analysis and real-time Slack notifications. Intelligent issue processing for modern development teams.',
   keywords: 'GitHub, AI, Slack, notifications, issue management, OpenAI, automation, DevOps',
   authors: [{ name: 'NotifyOps Team' }],
   openGraph: {
     title: 'NotifyOps - AI-Powered GitHub Issue Intelligence',
-    description: 'Transform GitHub issues into actionable insights with AI-powered analysis and real-time Slack notifications.',
+    description:
+      'Transform GitHub issues into actionable insights with AI-powered analysis and real-time Slack notifications.',
     url: 'https://notifyops.com',
     siteName: 'NotifyOps',
     images: [
@@ -28,7 +30,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'NotifyOps - AI-Powered GitHub Issue Intelligence',
-    description: 'Transform GitHub issues into actionable insights with AI-powered analysis and real-time Slack notifications.',
+    description:
+      'Transform GitHub issues into actionable insights with AI-powered analysis and real-time Slack notifications.',
     images: ['/og-image.png'],
     creator: '@notifyops',
   },
@@ -48,16 +51,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.className} antialiased`}>
-        {children}
-      </body>
+      <body className={`${inter.className} antialiased`}>{children}</body>
     </html>
   );
 }

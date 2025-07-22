@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -9,24 +9,24 @@ import { FloatingCards } from '@/components/FloatingCards';
 
 export function HeroSection() {
   const features = [
-    { icon: Brain, text: "AI-Powered Analysis" },
-    { icon: Zap, text: "Real-time Processing" },
-    { icon: MessageCircle, text: "Smart Slack Integration" },
-    { icon: Github, text: "GitHub Native" }
+    { icon: Brain, text: 'AI-Powered Analysis' },
+    { icon: Zap, text: 'Real-time Processing' },
+    { icon: MessageCircle, text: 'Smart Slack Integration' },
+    { icon: Github, text: 'GitHub Native' },
   ];
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Three.js Animated Background */}
       <ThreeBackground />
-      
+
       {/* Floating Issue Cards */}
       <FloatingCards />
-      
+
       {/* Gradient Overlays */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#0f0f23]/80 via-transparent to-[#0f0f23]/80" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#1a1a3e]/50 to-[#0f0f23]/90" />
-      
+
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -36,7 +36,7 @@ export function HeroSection() {
         >
           {/* Main Headline */}
           <div className="space-y-4">
-            <motion.h1 
+            <motion.h1
               className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -61,7 +61,7 @@ export function HeroSection() {
               transition={{ duration: 0.8, delay: 0.5 }}
               className="text-lg md:text-xl lg:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed"
             >
-              <TypewriterText 
+              <TypewriterText
                 text="Transform GitHub issues into actionable insights with AI-powered analysis and real-time Slack notifications"
                 delay={1000}
               />
@@ -97,15 +97,15 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 1.0 }}
             className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6"
           >
-            <Button 
+            <Button
               size="lg"
               className="bg-gradient-to-r from-[#4f46e5] to-[#7c3aed] hover:from-[#3730a3] hover:to-[#5b21b6] text-white px-8 py-4 text-lg font-semibold shadow-lg shadow-[#4f46e5]/25 hover:shadow-[#4f46e5]/40 transition-all duration-300"
             >
               Get Started Free
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
-            
-            <Button 
+
+            <Button
               variant="outline"
               size="lg"
               className="border-white/20 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold backdrop-blur-sm"
@@ -123,9 +123,9 @@ export function HeroSection() {
             className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto pt-16"
           >
             {[
-              { number: "99.9%", label: "Uptime" },
-              { number: "<100ms", label: "Response Time" },
-              { number: "10+", label: "AI Personalities" }
+              { number: '99.9%', label: 'Uptime' },
+              { number: '<100ms', label: 'Response Time' },
+              { number: '10+', label: 'AI Personalities' },
             ].map((stat, index) => (
               <div key={stat.label} className="text-center">
                 <motion.div

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
@@ -8,77 +8,77 @@ import { Button } from '@/components/ui/button';
 export function PricingSection() {
   const [ref, inView] = useInView({
     triggerOnce: true,
-    threshold: 0.1
+    threshold: 0.1,
   });
 
   const plans = [
     {
-      name: "Open Source",
-      description: "Perfect for individual developers and small teams",
-      price: "Free",
-      period: "forever",
+      name: 'Open Source',
+      description: 'Perfect for individual developers and small teams',
+      price: 'Free',
+      period: 'forever',
       icon: Star,
-      color: "from-[#10b981] to-[#06b6d4]",
+      color: 'from-[#10b981] to-[#06b6d4]',
       features: [
-        "Self-hosted deployment",
-        "All AI personalities",
-        "GitHub integration",
-        "Slack notifications",
-        "Basic monitoring",
-        "Community support",
-        "Docker deployment",
-        "Open source license"
+        'Self-hosted deployment',
+        'All AI personalities',
+        'GitHub integration',
+        'Slack notifications',
+        'Basic monitoring',
+        'Community support',
+        'Docker deployment',
+        'Open source license',
       ],
-      cta: "Get Started",
-      popular: false
+      cta: 'Get Started',
+      popular: false,
     },
     {
-      name: "Pro Cloud",
-      description: "Managed service for growing teams",
-      price: "$29",
-      period: "per month",
+      name: 'Pro Cloud',
+      description: 'Managed service for growing teams',
+      price: '$29',
+      period: 'per month',
       icon: Zap,
-      color: "from-[#4f46e5] to-[#7c3aed]",
+      color: 'from-[#4f46e5] to-[#7c3aed]',
       features: [
-        "Everything in Open Source",
-        "Managed hosting",
-        "Advanced analytics",
-        "Priority support",
-        "99.9% SLA",
-        "Auto-scaling",
-        "Backup & recovery",
-        "Team collaboration"
+        'Everything in Open Source',
+        'Managed hosting',
+        'Advanced analytics',
+        'Priority support',
+        '99.9% SLA',
+        'Auto-scaling',
+        'Backup & recovery',
+        'Team collaboration',
       ],
-      cta: "Start Free Trial",
-      popular: true
+      cta: 'Start Free Trial',
+      popular: true,
     },
     {
-      name: "Enterprise",
-      description: "Custom solutions for large organizations",
-      price: "Custom",
-      period: "pricing",
+      name: 'Enterprise',
+      description: 'Custom solutions for large organizations',
+      price: 'Custom',
+      period: 'pricing',
       icon: Building,
-      color: "from-[#8b5cf6] to-[#ec4899]",
+      color: 'from-[#8b5cf6] to-[#ec4899]',
       features: [
-        "Everything in Pro Cloud",
-        "On-premise deployment",
-        "SSO integration",
-        "Custom integrations",
-        "Dedicated support",
-        "SLA guarantees",
-        "Security compliance",
-        "White-label options"
+        'Everything in Pro Cloud',
+        'On-premise deployment',
+        'SSO integration',
+        'Custom integrations',
+        'Dedicated support',
+        'SLA guarantees',
+        'Security compliance',
+        'White-label options',
       ],
-      cta: "Contact Sales",
-      popular: false
-    }
+      cta: 'Contact Sales',
+      popular: false,
+    },
   ];
 
   return (
     <section id="pricing" className="py-20 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#0f0f23]/90 via-[#1a1a3e]/40 to-[#0f0f23]/90" />
-      
+
       <div ref={ref} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -118,23 +118,25 @@ export function PricingSection() {
                 </div>
               )}
 
-              <div className={`h-full p-8 rounded-2xl backdrop-blur-sm border transition-all duration-300 hover:scale-105 ${
-                plan.popular 
-                  ? 'bg-white/10 border-white/30 shadow-xl shadow-[#4f46e5]/10' 
-                  : 'bg-white/5 border-white/10 hover:bg-white/8 hover:border-white/20'
-              }`}>
+              <div
+                className={`h-full p-8 rounded-2xl backdrop-blur-sm border transition-all duration-300 hover:scale-105 ${
+                  plan.popular
+                    ? 'bg-white/10 border-white/30 shadow-xl shadow-[#4f46e5]/10'
+                    : 'bg-white/5 border-white/10 hover:bg-white/8 hover:border-white/20'
+                }`}
+              >
                 {/* Header */}
                 <div className="text-center mb-8">
-                  <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-r ${plan.color} p-4`}>
+                  <div
+                    className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-r ${plan.color} p-4`}
+                  >
                     <plan.icon className="w-full h-full text-white" />
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
                   <p className="text-gray-400 mb-4">{plan.description}</p>
                   <div className="flex items-baseline justify-center">
                     <span className="text-4xl font-bold text-white">{plan.price}</span>
-                    {plan.period && (
-                      <span className="text-gray-400 ml-2">/{plan.period}</span>
-                    )}
+                    {plan.period && <span className="text-gray-400 ml-2">/{plan.period}</span>}
                   </div>
                 </div>
 
@@ -155,10 +157,10 @@ export function PricingSection() {
                 </ul>
 
                 {/* CTA Button */}
-                <Button 
+                <Button
                   className={`w-full ${
-                    plan.popular 
-                      ? 'bg-gradient-to-r from-[#4f46e5] to-[#7c3aed] hover:from-[#3730a3] hover:to-[#5b21b6]' 
+                    plan.popular
+                      ? 'bg-gradient-to-r from-[#4f46e5] to-[#7c3aed] hover:from-[#3730a3] hover:to-[#5b21b6]'
                       : 'bg-white/10 hover:bg-white/20 border border-white/20'
                   }`}
                   size="lg"
@@ -191,17 +193,15 @@ export function PricingSection() {
               <span className="text-gray-300">ISO 27001</span>
             </div>
           </div>
-          
+
           <div className="max-w-2xl mx-auto p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
             <h3 className="text-xl font-bold text-white mb-4">Enterprise Features</h3>
             <p className="text-gray-300 leading-relaxed">
-              Need custom integrations, on-premise deployment, or enterprise-grade security? 
-              Our team works with you to create a solution that fits your organization&apos;s specific requirements.
+              Need custom integrations, on-premise deployment, or enterprise-grade security? Our
+              team works with you to create a solution that fits your organization&apos;s specific
+              requirements.
             </p>
-            <Button 
-              className="mt-4 bg-gradient-to-r from-[#8b5cf6] to-[#ec4899]"
-              size="lg"
-            >
+            <Button className="mt-4 bg-gradient-to-r from-[#8b5cf6] to-[#ec4899]" size="lg">
               Schedule Demo
             </Button>
           </div>

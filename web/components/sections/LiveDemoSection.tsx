@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
-  CheckCircle, 
-  AlertTriangle, 
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  CheckCircle,
+  AlertTriangle,
   Bug,
   GitBranch,
   MessageCircle,
-  ExternalLink
+  ExternalLink,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function LiveDemoSection() {
   const [ref, inView] = useInView({
     triggerOnce: true,
-    threshold: 0.1
+    threshold: 0.1,
   });
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -28,58 +28,58 @@ export function LiveDemoSection() {
 
   const sampleIssues = [
     {
-      id: "#1234",
-      title: "Memory leak in authentication service",
-      type: "bug",
-      priority: "high",
-      labels: ["bug", "memory-leak", "authentication"],
-      author: "john-doe",
+      id: '#1234',
+      title: 'Memory leak in authentication service',
+      type: 'bug',
+      priority: 'high',
+      labels: ['bug', 'memory-leak', 'authentication'],
+      author: 'john-doe',
       icon: Bug,
-      color: "from-red-500 to-pink-500"
+      color: 'from-red-500 to-pink-500',
     },
     {
-      id: "#1235",
-      title: "Add dark mode support to dashboard",
-      type: "feature",
-      priority: "medium",
-      labels: ["enhancement", "ui", "dark-mode"],
-      author: "jane-smith",
+      id: '#1235',
+      title: 'Add dark mode support to dashboard',
+      type: 'feature',
+      priority: 'medium',
+      labels: ['enhancement', 'ui', 'dark-mode'],
+      author: 'jane-smith',
       icon: GitBranch,
-      color: "from-blue-500 to-purple-500"
+      color: 'from-blue-500 to-purple-500',
     },
     {
-      id: "#1236",
-      title: "Database connection timeout in production",
-      type: "bug",
-      priority: "critical",
-      labels: ["bug", "database", "production"],
-      author: "dev-team",
+      id: '#1236',
+      title: 'Database connection timeout in production',
+      type: 'bug',
+      priority: 'critical',
+      labels: ['bug', 'database', 'production'],
+      author: 'dev-team',
       icon: AlertTriangle,
-      color: "from-orange-500 to-red-500"
-    }
+      color: 'from-orange-500 to-red-500',
+    },
   ];
 
   const processingSteps = [
-    { name: "Webhook Received", duration: 200 },
-    { name: "Issue Analysis", duration: 800 },
-    { name: "AI Processing", duration: 1200 },
-    { name: "Slack Notification", duration: 400 }
+    { name: 'Webhook Received', duration: 200 },
+    { name: 'Issue Analysis', duration: 800 },
+    { name: 'AI Processing', duration: 1200 },
+    { name: 'Slack Notification', duration: 400 },
   ];
 
   const slackMessage = {
-    title: "🐛 Critical Issue Detected",
-    summary: "Memory leak identified in authentication service - requires immediate attention",
+    title: '🐛 Critical Issue Detected',
+    summary: 'Memory leak identified in authentication service - requires immediate attention',
     analysis: [
-      "**Impact**: High - Authentication performance degradation",
-      "**Severity**: Critical - Memory usage increasing over time",
-      "**Recommendation**: Immediate code review and hotfix deployment"
+      '**Impact**: High - Authentication performance degradation',
+      '**Severity**: Critical - Memory usage increasing over time',
+      '**Recommendation**: Immediate code review and hotfix deployment',
     ],
-    actions: ["View Issue", "Assign Developer", "Create Hotfix Branch"]
+    actions: ['View Issue', 'Assign Developer', 'Create Hotfix Branch'],
   };
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    
+
     if (isPlaying) {
       interval = setInterval(() => {
         setCurrentStep((prev) => {
@@ -110,7 +110,7 @@ export function LiveDemoSection() {
   return (
     <section id="demo" className="py-20 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r from-[#0f0f23]/90 via-[#1a1a3e]/60 to-[#0f0f23]/90" />
-      
+
       <div ref={ref} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -174,24 +174,33 @@ export function LiveDemoSection() {
                     }`}
                   >
                     <div className="flex items-start space-x-4">
-                      <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${issue.color} p-3 flex-shrink-0`}>
+                      <div
+                        className={`w-12 h-12 rounded-lg bg-gradient-to-r ${issue.color} p-3 flex-shrink-0`}
+                      >
                         <issue.icon className="w-full h-full text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2 mb-2">
                           <span className="text-sm font-mono text-gray-400">{issue.id}</span>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            issue.priority === 'critical' ? 'bg-red-500/20 text-red-300' :
-                            issue.priority === 'high' ? 'bg-orange-500/20 text-orange-300' :
-                            'bg-blue-500/20 text-blue-300'
-                          }`}>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              issue.priority === 'critical'
+                                ? 'bg-red-500/20 text-red-300'
+                                : issue.priority === 'high'
+                                  ? 'bg-orange-500/20 text-orange-300'
+                                  : 'bg-blue-500/20 text-blue-300'
+                            }`}
+                          >
                             {issue.priority}
                           </span>
                         </div>
                         <h4 className="font-semibold text-white mb-2 truncate">{issue.title}</h4>
                         <div className="flex flex-wrap gap-1 mb-2">
                           {issue.labels.map((label) => (
-                            <span key={label} className="px-2 py-1 bg-gray-700 text-gray-300 text-xs rounded">
+                            <span
+                              key={label}
+                              className="px-2 py-1 bg-gray-700 text-gray-300 text-xs rounded"
+                            >
                               {label}
                             </span>
                           ))}
@@ -208,16 +217,16 @@ export function LiveDemoSection() {
                 <div className="space-y-3">
                   {processingSteps.map((step, index) => (
                     <div key={step.name} className="flex items-center space-x-3">
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                        index <= currentStep
-                          ? 'border-green-500 bg-green-500'
-                          : 'border-gray-400 bg-transparent'
-                      }`}>
+                      <div
+                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                          index <= currentStep
+                            ? 'border-green-500 bg-green-500'
+                            : 'border-gray-400 bg-transparent'
+                        }`}
+                      >
                         {index <= currentStep && <CheckCircle className="w-4 h-4 text-white" />}
                       </div>
-                      <span className={`${
-                        index <= currentStep ? 'text-white' : 'text-gray-400'
-                      }`}>
+                      <span className={`${index <= currentStep ? 'text-white' : 'text-gray-400'}`}>
                         {step.name}
                       </span>
                       {index === currentStep && isPlaying && (
@@ -252,19 +261,23 @@ export function LiveDemoSection() {
                   </div>
                   <div>
                     <div className="font-semibold text-white">NotifyOps</div>
-                    <div className="text-xs text-gray-400">Today at {new Date().toLocaleTimeString()}</div>
+                    <div className="text-xs text-gray-400">
+                      Today at {new Date().toLocaleTimeString()}
+                    </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <h4 className="text-lg font-bold text-white">{slackMessage.title}</h4>
                   <p className="text-gray-300">{slackMessage.summary}</p>
-                  
+
                   <div className="p-4 rounded-lg bg-[#2d3748] border-l-4 border-[#4f46e5]">
                     <div className="font-semibold text-white mb-2">🤖 AI Analysis</div>
                     <div className="space-y-1">
                       {slackMessage.analysis.map((point, index) => (
-                        <div key={index} className="text-sm text-gray-300">{point}</div>
+                        <div key={index} className="text-sm text-gray-300">
+                          {point}
+                        </div>
                       ))}
                     </div>
                   </div>

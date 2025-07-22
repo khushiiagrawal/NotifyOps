@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -10,14 +10,14 @@ import toast from 'react-hot-toast';
 export function ContactSection() {
   const [ref, inView] = useInView({
     triggerOnce: true,
-    threshold: 0.1
+    threshold: 0.1,
   });
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     company: '',
-    message: ''
+    message: '',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,51 +25,51 @@ export function ContactSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast.success('Message sent successfully! We\'ll get back to you soon.');
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    toast.success("Message sent successfully! We'll get back to you soon.");
     setFormData({ name: '', email: '', company: '', message: '' });
     setIsSubmitting(false);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
   const contactMethods = [
     {
       icon: Mail,
-      title: "Email Support",
-      description: "Get help with setup and configuration",
-      contact: "support@notifyops.com",
-      color: "from-[#4f46e5] to-[#7c3aed]"
+      title: 'Email Support',
+      description: 'Get help with setup and configuration',
+      contact: 'support@notifyops.com',
+      color: 'from-[#4f46e5] to-[#7c3aed]',
     },
     {
       icon: MessageCircle,
-      title: "Community Chat",
-      description: "Join our Discord community",
-      contact: "discord.gg/notifyops",
-      color: "from-[#7289da] to-[#5865f2]"
+      title: 'Community Chat',
+      description: 'Join our Discord community',
+      contact: 'discord.gg/notifyops',
+      color: 'from-[#7289da] to-[#5865f2]',
     },
     {
       icon: Github,
-      title: "GitHub Issues",
-      description: "Report bugs and request features",
-      contact: "github.com/notifyops/notifyops",
-      color: "from-[#24292e] to-[#586069]"
-    }
+      title: 'GitHub Issues',
+      description: 'Report bugs and request features',
+      contact: 'github.com/notifyops/notifyops',
+      color: 'from-[#24292e] to-[#586069]',
+    },
   ];
 
   return (
     <section id="contact" className="py-20 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0f0f23] via-[#1a1a3e]/80 to-[#0f0f23]" />
-      
+
       <div ref={ref} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -87,8 +87,8 @@ export function ContactSection() {
             </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Have questions about NotifyOps? Need help with setup? Want to discuss enterprise features? 
-            Reach out to our team!
+            Have questions about NotifyOps? Need help with setup? Want to discuss enterprise
+            features? Reach out to our team!
           </p>
         </motion.div>
 
@@ -101,7 +101,7 @@ export function ContactSection() {
           >
             <div className="p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
               <h3 className="text-2xl font-bold text-white mb-6">Send us a Message</h3>
-              
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -196,7 +196,7 @@ export function ContactSection() {
             className="space-y-8"
           >
             <h3 className="text-2xl font-bold text-white">Other Ways to Reach Us</h3>
-            
+
             <div className="space-y-6">
               {contactMethods.map((method, index) => (
                 <motion.div
@@ -207,7 +207,9 @@ export function ContactSection() {
                   className="p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group cursor-pointer"
                 >
                   <div className="flex items-start space-x-4">
-                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${method.color} p-3 group-hover:scale-110 transition-transform duration-300`}>
+                    <div
+                      className={`w-12 h-12 rounded-lg bg-gradient-to-r ${method.color} p-3 group-hover:scale-110 transition-transform duration-300`}
+                    >
                       <method.icon className="w-full h-full text-white" />
                     </div>
                     <div className="flex-1">
@@ -217,9 +219,7 @@ export function ContactSection() {
                       <p className="text-gray-300 text-sm mb-2 leading-relaxed">
                         {method.description}
                       </p>
-                      <p className="text-[#4f46e5] text-sm font-mono">
-                        {method.contact}
-                      </p>
+                      <p className="text-[#4f46e5] text-sm font-mono">{method.contact}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -231,9 +231,9 @@ export function ContactSection() {
               <h4 className="font-semibold text-white mb-4">Follow Us</h4>
               <div className="flex space-x-4">
                 {[
-                  { icon: Github, href: "https://github.com/notifyops", label: "GitHub" },
-                  { icon: Twitter, href: "https://twitter.com/notifyops", label: "Twitter" },
-                  { icon: MessageCircle, href: "https://discord.gg/notifyops", label: "Discord" }
+                  { icon: Github, href: 'https://github.com/notifyops', label: 'GitHub' },
+                  { icon: Twitter, href: 'https://twitter.com/notifyops', label: 'Twitter' },
+                  { icon: MessageCircle, href: 'https://discord.gg/notifyops', label: 'Discord' },
                 ].map((social) => (
                   <a
                     key={social.label}
