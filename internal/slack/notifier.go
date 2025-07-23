@@ -184,7 +184,7 @@ func (n *Notifier) convertSectionBlock(blockMap map[string]interface{}) (slack.B
 	// Handle fields section
 	if fieldsData, ok := blockMap["fields"]; ok {
 		var fields []*slack.TextBlockObject
-		
+
 		// Handle different types of fields data
 		switch v := fieldsData.(type) {
 		case []interface{}:
