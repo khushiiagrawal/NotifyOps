@@ -2,6 +2,9 @@ package github
 
 import (
 	"bytes"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -28,6 +31,14 @@ func (m *MockMetricsRecorder) RecordGitHubAPIError(operation, errorType string) 
 	m.Called(operation, errorType)
 }
 
+// generateSignature generates a valid GitHub webhook signature
+func generateSignature(secret string, payload []byte) string {
+	mac := hmac.New(sha256.New, []byte(secret))
+	mac.Write(payload)
+	expectedMAC := mac.Sum(nil)
+	return "sha256=" + hex.EncodeToString(expectedMAC)
+}
+
 // TestHandleWebhook tests the webhook handler
 func TestHandleWebhook(t *testing.T) {
 	// Create a test logger
@@ -37,9 +48,12 @@ func TestHandleWebhook(t *testing.T) {
 	// Create mock metrics
 	mockMetrics := &MockMetricsRecorder{}
 
+	// Create a mock GitHub client
+	mockClient := github.NewClient(nil)
+
 	// Create handler
 	handler := &Handler{
-		client:         nil, // We'll mock this in real tests
+		client:         mockClient,
 		webhookSecret:  "test-secret",
 		logger:         logger,
 		metrics:        mockMetrics,
@@ -82,19 +96,28 @@ func TestHandleWebhook(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Reset mock for each test case
+			mockMetrics = &MockMetricsRecorder{}
+			handler.metrics = mockMetrics
+
 			// Create request payload
 			payload, _ := json.Marshal(tt.payload)
 
 			// Create request
 			req := httptest.NewRequest("POST", "/webhook/github", bytes.NewBuffer(payload))
 			req.Header.Set("X-GitHub-Event", tt.eventType)
-			req.Header.Set("X-Hub-Signature-256", "sha256=test-signature")
+			req.Header.Set("X-Hub-Signature-256", generateSignature("test-secret", payload))
 
 			// Create response recorder
 			w := httptest.NewRecorder()
 
-			// Set up mock expectations
-			mockMetrics.On("RecordGitHubWebhook", tt.eventType, mock.Anything, mock.Anything, mock.Anything).Return()
+			// Set up mock expectations based on event type
+			if tt.eventType == "issues" {
+				mockMetrics.On("RecordGitHubWebhook", tt.eventType, mock.Anything, mock.Anything, mock.Anything).Return()
+				mockMetrics.On("RecordGitHubAPIError", "fetch_comments", "api_error").Return()
+				mockMetrics.On("RecordGitHubAPIError", "fetch_commits", "api_error").Return()
+			}
+			// For unsupported events, no metrics are recorded since handler returns early
 
 			// Call handler
 			handler.HandleWebhook(w, req)
@@ -145,13 +168,23 @@ func TestVerifySignature(t *testing.T) {
 
 	payload := []byte(`{"test": "data"}`)
 
-	// Test with valid signature (this would need proper HMAC calculation in real test)
-	// For now, we'll test the empty secret case
+	// Test with valid signature
+	validSignature := generateSignature("test-secret", payload)
+	result := handler.verifySignature(payload, validSignature)
+	assert.True(t, result, "Should accept valid signature")
+
+	// Test with invalid signature
+	invalidSignature := generateSignature("wrong-secret", payload)
+	result = handler.verifySignature(payload, invalidSignature)
+	assert.False(t, result, "Should reject invalid signature")
+
+	// Test with empty secret (should accept any signature)
 	handler.webhookSecret = ""
-	result := handler.verifySignature(payload, "sha256=test")
+	result = handler.verifySignature(payload, "sha256=test")
 	assert.True(t, result, "Should accept any signature when secret is empty")
 
-	// Test with invalid signature format
+	// Test with invalid signature format (reset secret first)
+	handler.webhookSecret = "test-secret"
 	result = handler.verifySignature(payload, "invalid-signature")
 	assert.False(t, result, "Should reject invalid signature format")
 }
