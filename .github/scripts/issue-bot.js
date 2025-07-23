@@ -20,9 +20,9 @@ const issue = event.issue;
 const comment = event.comment;
 const repo = event.repository;
 
+// Exit early if this is not a comment event (e.g., issues.opened, pull_request.opened)
 if (!comment || !comment.user) {
-  console.error("Error: 'comment' or 'comment.user' is undefined. Event payload:", JSON.stringify(event, null, 2));
-  process.exit(1);
+  process.exit(0);
 }
 
 const commenter = comment.user.login;
@@ -152,6 +152,17 @@ async function addLgtmLabel() {
   });
 }
 
+async function addCustomLabel(label) {
+  try {
+    await octokit.request('POST /repos/{owner}/{repo}/issues/{issue_number}/labels', {
+      owner: repo.owner.login,
+      repo: repo.name,
+      issue_number: target.number,
+      labels: [label],
+    });
+  } catch {}
+}
+
 function helpText() {
   return `
 **Available Commands:**
@@ -212,6 +223,12 @@ async function main() {
         const username = command.match(/^\/assign-to @?([a-zA-Z0-9-]+)$/i)[1];
         if (await hasWriteAccess(commenter)) {
           await assignUser(username);
+        }
+      } else if (/^\/label\s+"([^"]+)"$/i.test(command)) {
+        const match = command.match(/^\/label\s+"([^"]+)"$/i);
+        if (match && commenter === author) {
+          const label = match[1];
+          await addCustomLabel(label);
         }
       } else if (/^\/help$/i.test(command)) {
         await postComment(helpText());

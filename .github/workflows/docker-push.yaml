@@ -1,0 +1,31 @@
+name: Docker Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push-frontend:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+        - name: Build Frontend Docker Image
+          run: docker build -t arpitsrivastava529/notifyops-frontend:latest ./web
+        - name: Login to Docker Hub
+          run: echo "${{secrets.DOCKER_PASSWORD}}" | docker login -u ${{secrets.DOCKER_USERNAME}} --password-stdin
+        - name: Push Frontend Docker Image
+          run: docker push arpitsrivastava529/notifyops-frontend:latest 
+    
+  build-and-push-backend:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+        - name: Build Backend Docker Image
+          run: docker build -t arpitsrivastava529/notifyops-backend:latest .
+        - name: Login to Docker Hub
+          run: echo "${{secrets.DOCKER_PASSWORD}}" | docker login -u ${{secrets.DOCKER_USERNAME}} --password-stdin
+        - name: Push Backend Docker Image
+          run: docker push arpitsrivastava529/notifyops-backend:latest 
