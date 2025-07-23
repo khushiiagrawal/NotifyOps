@@ -16,10 +16,10 @@ RUN go mod download
 COPY . .
 
 # Build the application
-RUN go build -o github-issue-ai-bot ./cmd/server
+RUN go build -o main ./cmd/server
 
 # Expose ports
 EXPOSE 8080 9090
 
 # Run the application
-CMD ["./github-issue-ai-bot"] 
+CMD ["./main"] 
