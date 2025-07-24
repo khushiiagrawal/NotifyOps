@@ -201,7 +201,7 @@ async function main() {
           await unassignUser(commenter);
         }
       } else if (/^\/help wanted$/i.test(command)) {
-        await addLabel('help-wanted');
+        await addLabel('help wanted');
       } else if (/^\/close$/i.test(command)) {
         if (isAuthorOrCodeOwner(commenter)) {
           await closeIssue();
