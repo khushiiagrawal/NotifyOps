@@ -1,8 +1,10 @@
-# GitHub Issue AI Bot
+# NotifyOps
 
-An intelligent GitHub Issue Notification System that uses AI to summarize issues and deliver actionable insights to Slack. Built with Go, featuring real-time webhook processing, OpenAI integration, and comprehensive monitoring with Prometheus and Grafana.
+<img src="logo.png" height="400" width="400" />
 
-## 🚀 Features
+### An intelligent GitHub Issue Notification System that uses AI to summarize issues and deliver actionable insights to Slack. Built with Go, featuring real-time webhook processing, OpenAI integration, and comprehensive monitoring with Prometheus and Grafana.
+
+## Features
 
 - **AI-Powered Summarization**: Uses OpenAI GPT to generate contextual summaries of GitHub issues
 - **Real-time Processing**: Processes GitHub webhooks in real-time for instant notifications
@@ -12,7 +14,7 @@ An intelligent GitHub Issue Notification System that uses AI to summarize issues
 - **Containerized**: Fully containerized with Docker and Docker Compose
 - **Production Ready**: Includes health checks, graceful shutdown, and proper error handling
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 GitHub Webhook → Go Service → OpenAI API → Slack
@@ -30,7 +32,7 @@ GitHub Webhook → Go Service → OpenAI API → Slack
 - **Metrics Collector**: Exports Prometheus metrics for monitoring
 - **Configuration Manager**: Handles environment variables and settings
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Go 1.21+
 - Docker and Docker Compose
@@ -107,7 +109,7 @@ LOG_LEVEL=info
    - Go to [platform.openai.com](https://platform.openai.com)
    - Create an account and get your API key
 
-## 🚀 Running the Application
+## Running the Application
 
 ### Option 1: Docker Compose (Recommended)
 
@@ -163,40 +165,43 @@ go build -o github-issue-ai-bot cmd/server/main.go
 ### Grafana Dashboards
 
 The application includes pre-configured Grafana dashboards for:
+
 - System Overview
 - GitHub Webhook Performance
 - OpenAI API Usage
 - Slack Message Delivery
 - Issue Processing Analytics
 
-## 🎨 AI Prompt Customization
+## AI Prompt Customization
 
 The bot supports multiple AI personalities and analysis styles that can be customized to match your team's needs:
 
 ### Available Prompt Styles
 
-| Style | Personality | Focus | Best For |
-|-------|-------------|-------|----------|
-| `master_analyst` | Master Analyst | Technical Impact | Comprehensive technical analysis |
-| `senior_developer` | Senior Developer | Code Quality | Development-focused analysis |
-| `devops_engineer` | DevOps Engineer | Operations | Infrastructure and deployment focus |
-| `product_manager` | Product Manager | Business Value | User experience and ROI analysis |
-| `security_expert` | Security Expert | Security | Security vulnerability assessment |
-| `executive_summary` | Master Analyst | Business Impact | High-level executive summaries |
-| `quick_triage` | Senior Developer | Rapid Assessment | Fast issue triage |
-| `startup_focused` | Product Manager | Business Growth | Early-stage company needs |
-| `enterprise_focused` | Master Analyst | Enterprise | Large organization requirements |
-| `security_critical` | Security Expert | Critical Security | High-security environments |
+| Style                | Personality      | Focus             | Best For                            |
+| -------------------- | ---------------- | ----------------- | ----------------------------------- |
+| `master_analyst`     | Master Analyst   | Technical Impact  | Comprehensive technical analysis    |
+| `senior_developer`   | Senior Developer | Code Quality      | Development-focused analysis        |
+| `devops_engineer`    | DevOps Engineer  | Operations        | Infrastructure and deployment focus |
+| `product_manager`    | Product Manager  | Business Value    | User experience and ROI analysis    |
+| `security_expert`    | Security Expert  | Security          | Security vulnerability assessment   |
+| `executive_summary`  | Master Analyst   | Business Impact   | High-level executive summaries      |
+| `quick_triage`       | Senior Developer | Rapid Assessment  | Fast issue triage                   |
+| `startup_focused`    | Product Manager  | Business Growth   | Early-stage company needs           |
+| `enterprise_focused` | Master Analyst   | Enterprise        | Large organization requirements     |
+| `security_critical`  | Security Expert  | Critical Security | High-security environments          |
 
 ### Setting Prompt Styles
 
 **Via Environment Variable:**
+
 ```bash
 export OPENAI_PROMPT_STYLE=security_expert
 make run
 ```
 
 **Via API (Runtime):**
+
 ```bash
 # List available styles
 curl http://localhost:8080/api/prompt-styles
@@ -208,6 +213,7 @@ curl -X POST http://localhost:8080/api/prompt-style \
 ```
 
 **Via Docker Compose:**
+
 ```yaml
 environment:
   - OPENAI_PROMPT_STYLE=startup_focused
@@ -216,6 +222,7 @@ environment:
 ### Testing Different Styles
 
 Use the provided script to test all available styles:
+
 ```bash
 ./scripts/test_prompts.sh
 ```
@@ -224,21 +231,21 @@ Use the provided script to test all available styles:
 
 ### Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `GITHUB_WEBHOOK_SECRET` | GitHub webhook secret | Required |
-| `GITHUB_ACCESS_TOKEN` | GitHub personal access token | Required |
-| `GITHUB_BASE_URL` | GitHub API base URL | `https://api.github.com` |
-| `OPENAI_API_KEY` | OpenAI API key | Required |
-| `OPENAI_MODEL` | OpenAI model to use | `gpt-4` |
-| `OPENAI_MAX_TOKENS` | Maximum tokens for response | `2000` |
-| `OPENAI_TEMPERATURE` | AI response temperature | `0.7` |
-| `OPENAI_PROMPT_STYLE` | AI prompt style/personality | `master_analyst` |
-| `SLACK_BOT_TOKEN` | Slack bot token | Required |
-| `SLACK_SIGNING_SECRET` | Slack signing secret | Required |
-| `SLACK_CHANNEL_ID` | Target Slack channel ID | Required |
-| `SERVER_PORT` | HTTP server port | `8080` |
-| `LOG_LEVEL` | Logging level | `info` |
+| Variable                | Description                  | Default                  |
+| ----------------------- | ---------------------------- | ------------------------ |
+| `GITHUB_WEBHOOK_SECRET` | GitHub webhook secret        | Required                 |
+| `GITHUB_ACCESS_TOKEN`   | GitHub personal access token | Required                 |
+| `GITHUB_BASE_URL`       | GitHub API base URL          | `https://api.github.com` |
+| `OPENAI_API_KEY`        | OpenAI API key               | Required                 |
+| `OPENAI_MODEL`          | OpenAI model to use          | `gpt-4`                  |
+| `OPENAI_MAX_TOKENS`     | Maximum tokens for response  | `2000`                   |
+| `OPENAI_TEMPERATURE`    | AI response temperature      | `0.7`                    |
+| `OPENAI_PROMPT_STYLE`   | AI prompt style/personality  | `master_analyst`         |
+| `SLACK_BOT_TOKEN`       | Slack bot token              | Required                 |
+| `SLACK_SIGNING_SECRET`  | Slack signing secret         | Required                 |
+| `SLACK_CHANNEL_ID`      | Target Slack channel ID      | Required                 |
+| `SERVER_PORT`           | HTTP server port             | `8080`                   |
+| `LOG_LEVEL`             | Logging level                | `info`                   |
 
 ### Configuration File
 
@@ -274,47 +281,54 @@ monitor:
 log_level: "info"
 ```
 
-## 🔍 API Endpoints
+## API Endpoints
 
 ### Health Check
+
 ```
 GET /health
 ```
 
 ### Metrics
+
 ```
 GET /metrics
 ```
 
 ### GitHub Webhook
+
 ```
 POST /webhook/github
 ```
 
 ### Slack Interactive Messages
+
 ```
 POST /webhook/slack
 ```
 
-## 🧪 Testing
+## Testing
 
 ### Manual Testing
 
 1. **Test Health Endpoint**:
+
    ```bash
    curl http://localhost:8080/health
    ```
 
 2. **Test Metrics Endpoint**:
+
    ```bash
    curl http://localhost:8080/metrics
    ```
 
 3. **Test GitHub Webhook** (using ngrok for local development):
+
    ```bash
    # Install ngrok
    ngrok http 8080
-   
+
    # Use the ngrok URL in your GitHub webhook configuration
    ```
 
@@ -331,7 +345,7 @@ go test -cover ./...
 go test ./internal/github
 ```
 
-## 🚀 Deployment
+## Deployment
 
 ### Docker Deployment
 
@@ -361,7 +375,7 @@ See the `k8s/` directory for Kubernetes manifests.
 5. **Logging**: Configure centralized logging (ELK stack, Fluentd)
 6. **Monitoring**: Set up alerting rules in Prometheus/Grafana
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -369,17 +383,17 @@ See the `k8s/` directory for Kubernetes manifests.
 4. Add tests
 5. Submit a pull request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
+## Support
 
 - **Issues**: Create an issue in the GitHub repository
 - **Documentation**: Check the inline code comments and this README
 - **Community**: Join our Slack channel for discussions
 
-## 🔄 Roadmap
+## Roadmap
 
 - [ ] Support for GitHub Pull Requests
 - [ ] Advanced AI models and fine-tuning
@@ -389,4 +403,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Integration with Jira and other project management tools
 - [ ] Advanced filtering and routing rules
 - [ ] User preference management
-- [ ] Mobile app for notifications 
+- [ ] Mobile app for notifications
