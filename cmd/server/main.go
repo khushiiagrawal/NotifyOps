@@ -86,6 +86,8 @@ func main() {
 		cfg.Slack.SigningSecret,
 		logger,
 		metrics,
+		summarizer,
+		githubHandler,
 	)
 
 	// Set up Gin router

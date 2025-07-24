@@ -304,6 +304,26 @@ func (h *Handler) enrichIssueData(ctx context.Context, issue *github.Issue, acti
 	}, nil
 }
 
+// FetchEnrichedIssueData fetches and enriches issue data by repo and issue number
+func (h *Handler) FetchEnrichedIssueData(ctx context.Context, repo string, number int) (*IssueData, error) {
+	// Split repo into owner and name
+	parts := strings.SplitN(repo, "/", 2)
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("invalid repo format: %s", repo)
+	}
+	owner := parts[0]
+	repoName := parts[1]
+
+	// Fetch the issue
+	issue, _, err := h.client.Issues.Get(ctx, owner, repoName, number)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch issue: %w", err)
+	}
+
+	// Enrich the issue data (action and eventType are not known, use defaults)
+	return h.enrichIssueData(ctx, issue, "opened", "issues")
+}
+
 // fetchIssueComments fetches comments for an issue
 func (h *Handler) fetchIssueComments(ctx context.Context, owner, repo string, issueNumber int) ([]*github.IssueComment, error) {
 	if owner == "" || repo == "" {

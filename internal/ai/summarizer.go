@@ -42,13 +42,14 @@ type MetricsRecorder interface {
 
 // IssueSummary contains the AI-generated summary
 type IssueSummary struct {
-	Title       string
-	Summary     string
-	Priority    string
-	Category    string
-	ActionItems []string
-	CodeContext string
-	Confidence  float64
+	Title        string
+	Summary      string
+	Priority     string
+	Category     string
+	ActionItems  []string
+	CodeContext  string
+	Confidence   float64
+	SuggestedFix string `json:"suggested_fix"`
 }
 
 // NewSummarizer creates a new AI summarizer
@@ -271,13 +272,14 @@ Please analyze the provided GitHub issue data and respond with a structured summ
   "category": "bug|feature|enhancement|documentation|security|performance|infrastructure|architecture|technical-debt|other",
   "action_items": ["Specific, actionable recommendations with implementation guidance"],
   "code_context": "%s",
+  "suggested_fix": "A practical, copy-paste-ready code snippet or clear step-by-step fix instructions for resolving the issue.",
   "confidence": 0.85
 }
 
 Analysis Guidelines:
 %s
 
-Respond only with valid JSON that demonstrates your analytical capabilities.`,
+In addition to your analysis, always provide a 'suggested_fix' field with a practical, copy-paste-ready code snippet or clear step-by-step instructions for resolving the issue. If a code fix is not possible, provide the most actionable next steps. Respond only with valid JSON that demonstrates your analytical capabilities.`,
 		personality,
 		analysisFocus,
 		tone,
@@ -584,7 +586,9 @@ func (s *Summarizer) parseSummaryResponse(response string) (*IssueSummary, error
 	if summary.Confidence == 0 {
 		summary.Confidence = 0.5
 	}
-
+	if summary.SuggestedFix == "" {
+		summary.SuggestedFix = "No fix suggestion provided."
+	}
 	return &summary, nil
 }
 
@@ -690,38 +694,22 @@ func (s *Summarizer) GenerateSlackMessage(issueData *gh.IssueData, summary *Issu
 						"type": "button",
 						"text": map[string]interface{}{
 							"type": "plain_text",
-							"text": "View Issue",
+							"text": "Review Issue",
 						},
-						"url":   issueData.Issue.GetHTMLURL(),
-						"style": "primary",
+						"action_id": "review_issue",
+						"value":     fmt.Sprintf("%s:%d", repoName, issueData.Issue.GetNumber()),
+						"style":     "primary",
+						"url":       issueData.Issue.GetHTMLURL(),
 					},
 					{
 						"type": "button",
 						"text": map[string]interface{}{
 							"type": "plain_text",
-							"text": "Assign",
+							"text": "Suggest Fix",
 						},
-						"action_id": "assign_issue",
+						"action_id": "suggest_fix",
 						"value":     fmt.Sprintf("%s:%d", repoName, issueData.Issue.GetNumber()),
-					},
-					{
-						"type": "button",
-						"text": map[string]interface{}{
-							"type": "plain_text",
-							"text": "Close",
-						},
-						"action_id": "close_issue",
-						"value":     fmt.Sprintf("%s:%d", repoName, issueData.Issue.GetNumber()),
-						"style":     "danger",
-					},
-					{
-						"type": "button",
-						"text": map[string]interface{}{
-							"type": "plain_text",
-							"text": "Request Fix",
-						},
-						"action_id": "request_fix",
-						"value":     fmt.Sprintf("%s:%d", repoName, issueData.Issue.GetNumber()),
+						"style":     "primary",
 					},
 				},
 			},
