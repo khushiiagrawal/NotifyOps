@@ -144,7 +144,7 @@ go build -o github-issue-ai-bot cmd/server/main.go
 ./github-issue-ai-bot
 ```
 
-## 📊 Monitoring
+## Monitoring
 
 ### Access Points
 
@@ -392,6 +392,20 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Issues**: Create an issue in the GitHub repository
 - **Documentation**: Check the inline code comments and this README
 - **Community**: Join our Slack channel for discussions
+
+# Contributors
+<div>
+<h2><font size="6"><img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Red%20Heart.png" alt="Red Heart" width="40" height="40" /> Contributors </font></h2>
+</div>
+<br>
+
+<center>
+<a href="https://github.com/Arpit529Srivastava/NotifyOps/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Arpit529Srivastava/NotifyOps" />
+</a>
+</center>
+<br>
+<br>
 
 ## Roadmap
 
