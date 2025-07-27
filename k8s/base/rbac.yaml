@@ -1,0 +1,131 @@
+---
+# Role for NotifyOps application
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: notifyops-role
+  namespace: notifyops
+  labels:
+    app: notifyops
+    component: rbac
+rules:
+  # Allow reading configmaps and secrets
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    verbs: ["get", "list", "watch"]
+  # Allow reading endpoints for service discovery
+  - apiGroups: [""]
+    resources: ["endpoints"]
+    verbs: ["get", "list", "watch"]
+  # Allow reading services
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list", "watch"]
+  # Allow reading pods for metrics collection
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+---
+# Role for Prometheus monitoring
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prometheus-role
+  namespace: notifyops
+  labels:
+    app: prometheus
+    component: rbac
+rules:
+  # Allow reading configmaps for Prometheus configuration
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+  # Allow reading endpoints for service discovery
+  - apiGroups: [""]
+    resources: ["endpoints"]
+    verbs: ["get", "list", "watch"]
+  # Allow reading services
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list", "watch"]
+  # Allow reading pods for metrics collection
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+  # Allow reading nodes for node metrics
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch"]
+---
+# Role for Grafana
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: grafana-role
+  namespace: notifyops
+  labels:
+    app: grafana
+    component: rbac
+rules:
+  # Allow reading configmaps for Grafana configuration
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+  # Allow reading secrets for datasource configuration
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch"]
+---
+# Role Binding for NotifyOps
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: notifyops-role-binding
+  namespace: notifyops
+  labels:
+    app: notifyops
+    component: rbac
+subjects:
+  - kind: ServiceAccount
+    name: notifyops-sa
+    namespace: notifyops
+roleRef:
+  kind: Role
+  name: notifyops-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Role Binding for Prometheus
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prometheus-role-binding
+  namespace: notifyops
+  labels:
+    app: prometheus
+    component: rbac
+subjects:
+  - kind: ServiceAccount
+    name: prometheus-sa
+    namespace: notifyops
+roleRef:
+  kind: Role
+  name: prometheus-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Role Binding for Grafana
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: grafana-role-binding
+  namespace: notifyops
+  labels:
+    app: grafana
+    component: rbac
+subjects:
+  - kind: ServiceAccount
+    name: grafana-sa
+    namespace: notifyops
+roleRef:
+  kind: Role
+  name: grafana-role
+  apiGroup: rbac.authorization.k8s.io
