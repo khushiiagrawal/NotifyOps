@@ -5,6 +5,10 @@ on:
     types: [opened, labeled, unlabeled, synchronize, edited, reopened]
     branches: [main]
 
+permissions:
+  pull-requests: read
+  issues: read
+
 jobs:
   lgtm-check:
     runs-on: ubuntu-latest
