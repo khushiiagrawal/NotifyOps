@@ -1,0 +1,164 @@
+# Auto-labeler configuration for NotifyOps
+# This file defines rules for automatically adding labels to pull requests
+
+# Backend related changes
+'Backend':
+  - '**/*.go'
+  - '**/go.mod'
+  - '**/go.sum'
+  - 'cmd/**/*'
+  - 'internal/**/*'
+  - 'pkg/**/*'
+  - 'cmd/server/**'
+
+# Frontend related changes
+'Frontend':
+  - 'web/**/*'
+  - '**/*.tsx'
+  - '**/*.ts'
+  - '**/*.js'
+  - '**/*.jsx'
+  - '**/*.css'
+  - '**/*.scss'
+  - '**/*.sass'
+  - '**/*.json'
+  - '**/*.html'
+  - '**/package.json'
+  - '**/package-lock.json'
+  - '**/tailwind.config.*'
+  - '**/next.config.*'
+  - '**/tsconfig.json'
+  - 'cmd/web/**'
+
+# Documentation changes
+'documentation':
+  - '**/*.md'
+  - '**/*.rst'
+  - '**/*.txt'
+  - '**/*.adoc'
+  - 'docs/**/*'
+  - 'README*'
+  - 'CHANGELOG*'
+  - 'LICENSE*'
+  - '.github/ISSUE_TEMPLATE/**'
+
+# CI/CD related changes
+'devops: ci-cd':
+  - '.github/**/*'
+  - '.gitlab-ci.yml'
+  - '.travis.yml'
+  - 'Jenkinsfile'
+  - 'Makefile'
+  - 'scripts/**/*'
+  - '**/workflow*'
+  - '**/pipeline*'
+
+# Deployment related changes
+'devops: deployment':
+  - '**/Dockerfile*'
+  - '**/docker-compose*'
+  - '**/*.yaml'
+  - '**/*.yml'
+  - '**/*.toml'
+  - '**/*.ini'
+  - '**/*.conf'
+  - '**/*.config'
+  - 'k8s/**/*'
+  - 'kubernetes/**/*'
+  - 'helm/**/*'
+  - 'terraform/**/*'
+  - 'ansible/**/*'
+
+# Monitoring related changes
+'devops: monitoring':
+  - '**/prometheus*'
+  - '**/grafana/**/*'
+  - '**/*.metrics'
+  - '**/monitoring/**/*'
+  - '**/observability/**/*'
+  - '**/logging/**/*'
+  - 'internal/monitor/**/*'
+
+# Bug fixes (based on PR title/body)
+'bug':
+  - title: 'fix'
+  - title: 'bug'
+  - title: 'fixes'
+  - title: 'fixed'
+  - title: 'resolve'
+  - title: 'resolves'
+  - title: 'resolved'
+  - body: 'fix'
+  - body: 'bug'
+  - body: 'fixes'
+  - body: 'fixed'
+  - body: 'resolve'
+  - body: 'resolves'
+  - body: 'resolved'
+
+# New features (based on PR title/body)
+'enhancement':
+  - title: 'feat'
+  - title: 'feature'
+  - title: 'add'
+  - title: 'new'
+  - title: 'implement'
+  - body: 'feat'
+  - body: 'feature'
+  - body: 'add'
+  - body: 'new'
+  - body: 'implement'
+
+# Good first issue (for new contributors)
+'good first issue':
+  - title: 'good first issue'
+  - body: 'good first issue'
+
+# Help wanted
+'help wanted':
+  - title: 'help wanted'
+  - body: 'help wanted'
+
+# Priority labels based on PR content
+'priority: critical':
+  - title: 'critical'
+  - title: 'urgent'
+  - title: 'emergency'
+  - body: 'critical'
+  - body: 'urgent'
+  - body: 'emergency'
+
+'priority: high':
+  - title: 'high priority'
+  - title: 'important'
+  - body: 'high priority'
+  - body: 'important'
+
+'priority: medium':
+  - title: 'medium priority'
+  - title: 'medium'
+  - body: 'medium priority'
+  - body: 'medium'
+
+# Status labels based on PR content
+'status: triage':
+  - title: 'wip'
+  - title: 'work in progress'
+  - title: 'draft'
+  - body: 'wip'
+  - body: 'work in progress'
+  - body: 'draft'
+  - body: 'todo'
+  - body: 'not ready'
+
+'status: needs-review':
+  - title: 'ready for review'
+  - title: 'review needed'
+  - body: 'ready for review'
+  - body: 'review needed'
+
+'status: in-progress':
+  - title: 'in progress'
+  - title: 'working on'
+  - body: 'in progress'
+  - body: 'working on'
