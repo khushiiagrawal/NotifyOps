@@ -1,0 +1,168 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notifyops-deployment
+  namespace: notifyops
+  labels:
+    app: notifyops
+    component: backend
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: notifyops
+      component: backend
+  template:
+    metadata:
+      labels:
+        app: notifyops
+        component: backend
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: notifyops-sa
+      containers:
+      - name: notifyops
+        image: notifyops:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        env:
+        # Server Configuration
+        - name: SERVER_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: notifyops-config
+              key: SERVER_PORT
+        - name: SERVER_READ_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: notifyops-config
+              key: SERVER_READ_TIMEOUT
+        - name: SERVER_WRITE_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: notifyops-config
+              key: SERVER_WRITE_TIMEOUT
+        - name: SERVER_IDLE_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: notifyops-config
+              key: SERVER_IDLE_TIMEOUT
+        # GitHub Configuration
+        - name: GITHUB_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: notifyops-config
+              key: GITHUB_BASE_URL
+        - name: GITHUB_WEBHOOK_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: notifyops-secrets
+              key: GITHUB_WEBHOOK_SECRET
+        - name: GITHUB_ACCESS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: notifyops-secrets
+              key: GITHUB_ACCESS_TOKEN
+        # OpenAI Configuration
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: notifyops-secrets
+              key: OPENAI_API_KEY
+        - name: OPENAI_MODEL
+          valueFrom:
+            configMapKeyRef:
+              name: notifyops-config
+              key: OPENAI_MODEL
+        - name: OPENAI_MAX_TOKENS
+          valueFrom:
+            configMapKeyRef:
+              name: notifyops-config
+              key: OPENAI_MAX_TOKENS
+        - name: OPENAI_TEMPERATURE
+          valueFrom:
+            configMapKeyRef:
+              name: notifyops-config
+              key: OPENAI_TEMPERATURE
+        - name: OPENAI_PROMPT_STYLE
+          valueFrom:
+            configMapKeyRef:
+              name: notifyops-config
+              key: OPENAI_PROMPT_STYLE
+        # Slack Configuration
+        - name: SLACK_BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: notifyops-secrets
+              key: SLACK_BOT_TOKEN
+        - name: SLACK_SIGNING_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: notifyops-secrets
+              key: SLACK_SIGNING_SECRET
+        - name: SLACK_CHANNEL_ID
+          valueFrom:
+            secretKeyRef:
+              name: notifyops-secrets
+              key: SLACK_CHANNEL_ID
+        # Monitoring Configuration
+        - name: METRICS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: notifyops-config
+              key: METRICS_PORT
+        - name: METRICS_PATH
+          valueFrom:
+            configMapKeyRef:
+              name: notifyops-config
+              key: METRICS_PATH
+        # Logging Configuration
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: notifyops-config
+              key: LOG_LEVEL
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30

@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/signal"
+	"runtime"
+	"strings"
 	"syscall"
 	"time"
 
@@ -19,7 +22,73 @@ import (
 	"github-issue-ai-bot/internal/slack"
 )
 
+// Version, BuildDate, and GitCommit will be set during build
+var (
+	Version   = "0.0.1"
+	BuildDate = "2025-07-27"
+	GitCommit = ""
+)
+
+// getGitInfo retrieves the latest commit hash and date from Git
+func getGitInfo() (string, string) {
+	// Get the latest commit hash
+	commitCmd := exec.Command("git", "rev-parse", "HEAD")
+	commitOutput, err := commitCmd.Output()
+	commitHash := "unknown"
+	if err == nil {
+		commitHash = strings.TrimSpace(string(commitOutput))
+	}
+
+	// Get the latest commit date
+	dateCmd := exec.Command("git", "log", "-1", "--format=%cd", "--date=short")
+	dateOutput, err := dateCmd.Output()
+	commitDate := "unknown"
+	if err == nil {
+		commitDate = strings.TrimSpace(string(dateOutput))
+	}
+
+	return commitHash, commitDate
+}
+
+// init function to set version information from Git
+func init() {
+	commitHash, commitDate := getGitInfo()
+	if GitCommit == "" {
+		GitCommit = commitHash
+	}
+	if BuildDate == "2025-07-27" { // Only update if it's the default value
+		BuildDate = commitDate
+	}
+}
+
+func printBanner() {
+    purple := "\033[1;35m"
+    cyan := "\033[1;36m"
+    green := "\033[1;32m"
+    reset := "\033[0m"
+    banner := `
+ _   _       _   _  __       ___            
+| \ | | ___ | |_(_)/ _|_   _/ _ \ _ __  ___  
+|  \| |/ _ \| __| | |_| | | | | | | '_ \/ __| 
+| |\  | (_) | |_| |  _| |_| | |_| | |_) \__ \ 
+|_| \_|\___/ \__|_|_|  \__, |\___/| .__/|___/ 
+                       |___/     |_|         
+`
+    fmt.Println(purple + banner + reset)
+    fmt.Println(cyan + "NotifyOps - Intelligent GitHub Issue Management & AI Summarization" + reset)
+    fmt.Printf("%sVersion:%s   %s\n", green, reset, Version)
+    fmt.Printf("%sBuild:%s     %s\n", green, reset, BuildDate)
+    fmt.Printf("%sCommit:%s    %s\n", green, reset, GitCommit)
+    fmt.Printf("%sGo:%s         %s\n", green, reset, runtime.Version())
+    fmt.Printf("%sOS/Arch:%s    %s/%s\n", green, reset, runtime.GOOS, runtime.GOARCH)
+    fmt.Println()
+}
+
+
 func main() {
+	// Print banner
+	printBanner()
+
 	// Initialize logger
 	logger, err := zap.NewProduction()
 	if err != nil {

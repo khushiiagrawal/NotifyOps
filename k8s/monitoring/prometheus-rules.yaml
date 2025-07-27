@@ -1,0 +1,201 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-rules
+  namespace: notifyops
+  labels:
+    app: prometheus
+    component: rules
+data:
+  notifyops-rules.yml: |
+    groups:
+      - name: notifyops.rules
+        rules:
+          # High CPU Usage Alert
+          - alert: HighCPUUsage
+            expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+            for: 5m
+            labels:
+              severity: warning
+              team: notifyops
+            annotations:
+              summary: "High CPU usage detected"
+              description: "CPU usage is above 80% for more than 5 minutes on {{ $labels.instance }}"
+
+          # High Memory Usage Alert
+          - alert: HighMemoryUsage
+            expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+            for: 5m
+            labels:
+              severity: warning
+              team: notifyops
+            annotations:
+              summary: "High memory usage detected"
+              description: "Memory usage is above 85% for more than 5 minutes on {{ $labels.instance }}"
+
+          # Pod Restart Alert
+          - alert: PodRestarting
+            expr: increase(kube_pod_container_status_restarts_total[15m]) > 0
+            for: 1m
+            labels:
+              severity: warning
+              team: notifyops
+            annotations:
+              summary: "Pod is restarting"
+              description: "Pod {{ $labels.pod }} is restarting frequently"
+
+          # Service Down Alert
+          - alert: ServiceDown
+            expr: up == 0
+            for: 1m
+            labels:
+              severity: critical
+              team: notifyops
+            annotations:
+              summary: "Service is down"
+              description: "Service {{ $labels.job }} is down"
+
+          # High Response Time Alert
+          - alert: HighResponseTime
+            expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+            for: 5m
+            labels:
+              severity: warning
+              team: notifyops
+            annotations:
+              summary: "High response time detected"
+              description: "95th percentile response time is above 2 seconds"
+
+          # Error Rate Alert
+          - alert: HighErrorRate
+            expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+            for: 5m
+            labels:
+              severity: critical
+              team: notifyops
+            annotations:
+              summary: "High error rate detected"
+              description: "Error rate is above 5% for more than 5 minutes"
+
+          # GitHub Webhook Failure Alert
+          - alert: GitHubWebhookFailure
+            expr: rate(http_requests_total{handler="/webhook/github", status=~"4..|5.."}[5m]) > 0
+            for: 2m
+            labels:
+              severity: warning
+              team: notifyops
+            annotations:
+              summary: "GitHub webhook failures detected"
+              description: "GitHub webhook is returning errors"
+
+          # Slack Notification Failure Alert
+          - alert: SlackNotificationFailure
+            expr: rate(notifyops_slack_notifications_failed_total[5m]) > 0
+            for: 2m
+            labels:
+              severity: warning
+              team: notifyops
+            annotations:
+              summary: "Slack notification failures detected"
+              description: "Slack notifications are failing"
+
+          # AI Summary Generation Failure Alert
+          - alert: AISummaryGenerationFailure
+            expr: rate(notifyops_ai_summaries_failed_total[5m]) > 0
+            for: 2m
+            labels:
+              severity: warning
+              team: notifyops
+            annotations:
+              summary: "AI summary generation failures detected"
+              description: "AI summary generation is failing"
+
+          # High Issue Processing Time Alert
+          - alert: HighIssueProcessingTime
+            expr: histogram_quantile(0.95, rate(notifyops_issue_processing_duration_seconds_bucket[5m])) > 30
+            for: 5m
+            labels:
+              severity: warning
+              team: notifyops
+            annotations:
+              summary: "High issue processing time detected"
+              description: "Issue processing is taking longer than 30 seconds"
+
+          # Disk Space Alert
+          - alert: DiskSpaceLow
+            expr: (node_filesystem_avail_bytes{mountpoint="/"} * 100) / node_filesystem_size_bytes{mountpoint="/"} < 10
+            for: 5m
+            labels:
+              severity: warning
+              team: notifyops
+            annotations:
+              summary: "Low disk space detected"
+              description: "Disk space is below 10% on {{ $labels.instance }}"
+
+          # Container Memory Limit Alert
+          - alert: ContainerMemoryLimit
+            expr: (container_memory_usage_bytes / container_spec_memory_limit_bytes * 100) > 90
+            for: 5m
+            labels:
+              severity: warning
+              team: notifyops
+            annotations:
+              summary: "Container memory limit approaching"
+              description: "Container {{ $labels.container }} is using more than 90% of memory limit"
+
+          # Container CPU Limit Alert
+          - alert: ContainerCPULimit
+            expr: (rate(container_cpu_usage_seconds_total[5m]) / container_spec_cpu_quota * 100) > 90
+            for: 5m
+            labels:
+              severity: warning
+              team: notifyops
+            annotations:
+              summary: "Container CPU limit approaching"
+              description: "Container {{ $labels.container }} is using more than 90% of CPU limit"
+---
+# Recording Rules for Common Queries
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-recording-rules
+  namespace: notifyops
+  labels:
+    app: prometheus
+    component: recording-rules
+data:
+  recording-rules.yml: |
+    groups:
+      - name: notifyops.recording.rules
+        rules:
+          # HTTP Request Rate
+          - record: job:http_requests:rate5m
+            expr: rate(http_requests_total[5m])
+
+          # HTTP Error Rate
+          - record: job:http_requests:errors:rate5m
+            expr: rate(http_requests_total{status=~"4..|5.."}[5m])
+
+          # Response Time 95th Percentile
+          - record: job:http_request_duration_seconds:p95
+            expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))
+
+          # CPU Usage Percentage
+          - record: instance:node_cpu_utilisation:rate5m
+            expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
+
+          # Memory Usage Percentage
+          - record: instance:node_memory_utilisation:ratio
+            expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes
+
+          # Pod Restart Rate
+          - record: kube_pod_container_status_restarts:rate5m
+            expr: rate(kube_pod_container_status_restarts_total[5m])
+
+          # AI Summary Generation Rate
+          - record: notifyops:ai_summaries_generated:rate5m
+            expr: rate(notifyops_ai_summaries_generated_total[5m])
+
+          # Issue Processing Duration 95th Percentile
+          - record: notifyops:issue_processing_duration_seconds:p95
+            expr: histogram_quantile(0.95, rate(notifyops_issue_processing_duration_seconds_bucket[5m]))

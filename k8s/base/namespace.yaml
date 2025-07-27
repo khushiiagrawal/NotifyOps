@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: notifyops
+  labels:
+    name: notifyops
+    app: notifyops
+    environment: development
+  annotations:
+    description: "Namespace for NotifyOps - Github Issue/PR AI Bot"

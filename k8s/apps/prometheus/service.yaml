@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  namespace: notifyops
+  labels:
+    app: prometheus
+    component: monitoring
+  annotations:
+    prometheus.io/scrape: "false"  # Prometheus doesn't scrape itself via service discovery
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+    appProtocol: http
+  selector:
+    app: prometheus
+    component: monitoring
+  sessionAffinity: None
+---
+# Service for Prometheus federation (optional - for multi-cluster monitoring)
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-federation
+  namespace: notifyops
+  labels:
+    app: prometheus
+    component: federation
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+    appProtocol: http
+  selector:
+    app: prometheus
+    component: monitoring
+  sessionAffinity: None

@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notifyops-config
+  namespace: notifyops
+  labels:
+    app: notifyops
+    component: config
+data:
+  # Server Configuration
+  SERVER_PORT: "8080"
+  SERVER_READ_TIMEOUT: "30s"
+  SERVER_WRITE_TIMEOUT: "30s"
+  SERVER_IDLE_TIMEOUT: "60s"
+  
+  # GitHub Configuration
+  GITHUB_BASE_URL: "https://api.github.com"
+  
+  # OpenAI Configuration
+  OPENAI_MODEL: "gpt-3.5-turbo"
+  OPENAI_MAX_TOKENS: "2000"
+  OPENAI_TEMPERATURE: "0.7"
+  OPENAI_PROMPT_STYLE: "master_analyst"
+  
+  # Monitoring Configuration
+  METRICS_PORT: "9090"
+  METRICS_PATH: "/metrics"
+  
+  # Logging Configuration
+  LOG_LEVEL: "info"
+  
+  # Prometheus Configuration
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    
+    rule_files:
+      - /etc/prometheus/rules/*.yml
+    
+    scrape_configs:
+      - job_name: 'notifyops'
+        static_configs:
+          - targets: ['notifyops-service:9090']
+        metrics_path: /metrics
+        scrape_interval: 10s
+    
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
+  
+  # Grafana Configuration
+  grafana.ini: |
+    [server]
+    http_port = 3000
+    domain = localhost
+    
+    [security]
+    admin_password = admin
+    allow_sign_up = false
+    
+    [users]
+    allow_sign_up = false
+    
+    [auth.anonymous]
+    enabled = false
+    
+    [database]
+    type = sqlite3
+    path = /var/lib/grafana/grafana.db
+    
+    [session]
+    provider = file
+    provider_config = sessions
+    
+    [log]
+    mode = console
+    level = info
+    
+    [paths]
+    data = /var/lib/grafana
+    logs = /var/log/grafana
+    plugins = /var/lib/grafana/plugins
+    provisioning = /etc/grafana/provisioning
