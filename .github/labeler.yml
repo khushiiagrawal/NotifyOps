@@ -2,7 +2,7 @@
 # This file defines rules for automatically adding labels to pull requests
 
 # Backend related changes
-'Backend':
+Backend:
   - '**/*.go'
   - '**/go.mod'
   - '**/go.sum'
@@ -12,7 +12,7 @@
   - 'cmd/server/**'
 
 # Frontend related changes
-'Frontend':
+Frontend:
   - 'web/**/*'
   - '**/*.tsx'
   - '**/*.ts'
@@ -31,7 +31,7 @@
   - 'cmd/web/**'
 
 # Documentation changes
-'documentation':
+documentation:
   - '**/*.md'
   - '**/*.rst'
   - '**/*.txt'
@@ -80,7 +80,7 @@
   - 'internal/monitor/**/*'
 
 # Bug fixes (based on PR title/body)
-'bug':
+bug:
   - title: 'fix'
   - title: 'bug'
   - title: 'fixes'
@@ -97,7 +97,7 @@
   - body: 'resolved'
 
 # New features (based on PR title/body)
-'enhancement':
+enhancement:
   - title: 'feat'
   - title: 'feature'
   - title: 'add'
