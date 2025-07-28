@@ -32,6 +32,114 @@ GitHub Webhook → Go Service → OpenAI API → Slack
 - **Metrics Collector**: Exports Prometheus metrics for monitoring
 - **Configuration Manager**: Handles environment variables and settings
 
+## Project Structure
+
+```
+NotifyOps/
+├── cmd/                          # Application entry points
+│   └── server/                   # Main server application
+│       └── main.go              # Server entry point and initialization
+├── internal/                     # Internal application packages
+│   ├── ai/                      # AI/OpenAI integration
+│   │   ├── prompts.go           # AI prompt styles and configurations
+│   │   └── summarizer.go        # OpenAI API integration and summarization
+│   ├── config/                  # Configuration management
+│   │   └── config.go            # Environment variables and app configuration
+│   ├── github/                  # GitHub API integration
+│   │   ├── handler.go           # GitHub webhook processing and API calls
+│   │   └── handler_test.go      # GitHub handler unit tests
+│   ├── monitor/                 # Monitoring and metrics
+│   │   └── metrics.go           # Prometheus metrics collection
+│   └── slack/                   # Slack integration
+│       └── notifier.go          # Slack message formatting and sending
+├── pkg/                         # Public packages (reusable)
+│   └── utils/                   # Utility functions
+│       └── text.go              # Text processing utilities
+├── web/                         # Next.js web application
+│   ├── app/                     # Next.js app directory
+│   │   ├── globals.css          # Global styles
+│   │   ├── layout.tsx           # Root layout component
+│   │   └── page.tsx             # Home page component
+│   ├── components/              # React components
+│   │   ├── ui/                  # Reusable UI components
+│   │   ├── sections/            # Page sections
+│   │   └── ...                  # Other components
+│   ├── package.json             # Node.js dependencies
+│   └── Dockerfile               # Web app container
+├── k8s/                         # Kubernetes deployment manifests
+│   ├── apps/                    # Application deployments
+│   │   ├── grafana/             # Grafana deployment
+│   │   ├── notifyops/           # Main app deployment
+│   │   ├── prometheus/          # Prometheus deployment
+│   │   └── web/                 # Web app deployment
+│   ├── base/                    # Base configurations
+│   │   ├── namespace.yaml       # Kubernetes namespace
+│   │   ├── rbac.yaml            # Role-based access control
+│   │   └── configmaps.yaml      # Configuration maps
+│   ├── monitoring/              # Monitoring configurations
+│   │   ├── grafana-dashboard.yaml # Grafana dashboard configs
+│   │   └── prometheus-rules.yaml  # Prometheus alerting rules
+│   └── scripts/                 # Kubernetes deployment scripts
+│       ├── deploy.sh            # Deployment script
+│       ├── setup.sh             # Cluster setup script
+│       └── cleanup.sh           # Cleanup script
+├── grafana/                     # Grafana configuration
+│   ├── dashboard.json           # Dashboard definitions
+│   └── datasources.yml          # Data source configurations
+├── test/                        # Test files
+│   ├── ai_summarizer_test.go    # AI summarizer tests
+│   ├── config_test.go           # Configuration tests
+│   ├── monitor_metrics_test.go  # Metrics tests
+│   ├── server_test.go           # Server tests
+│   ├── slack_notifier_test.go   # Slack notifier tests
+│   └── utils_test.go            # Utility function tests
+├── scripts/                     # Utility scripts
+│   └── setup.sh                 # Environment setup script
+├── prometheus_data/             # Prometheus data storage          
+├── .gitignore                   
+├── .github/                     # GitHub workflows and templates
+├── docker-compose.yml           # Docker Compose configuration
+├── Dockerfile                   # Main application container
+├── go.mod                       
+├── go.sum                      
+├── Makefile                     # Build and deployment commands
+├── OWNERS                       
+├── prometheus.yml               # Prometheus configuration
+├── logo.png                     
+└── README.md                    
+```
+
+### Key Files Explained
+
+**Core Application:**
+- `cmd/server/main.go` - Application entry point, server initialization, and routing
+- `internal/config/config.go` - Environment variable loading and configuration management
+- `internal/github/handler.go` - GitHub webhook processing and API integration
+- `internal/ai/summarizer.go` - OpenAI API integration for issue summarization
+- `internal/slack/notifier.go` - Slack message formatting and sending
+- `internal/monitor/metrics.go` - Prometheus metrics collection and export
+
+**Configuration:**
+- `docker-compose.yml` - Multi-service container orchestration
+- `Dockerfile` - Main application container definition
+- `prometheus.yml` - Prometheus monitoring configuration
+- `grafana/dashboard.json` - Grafana dashboard definitions
+- `grafana/datasources.yml` - Grafana data source configuration
+
+**Deployment:**
+- `k8s/` - Complete Kubernetes deployment manifests
+- `Makefile` - Build, test, and deployment commands
+- `scripts/setup.sh` - Environment setup and initialization
+
+**Web Application:**
+- `web/` - Next.js frontend application
+- `web/app/page.tsx` - Landing page component
+- `web/components/` - Reusable React components
+
+**Testing:**
+- `test/` - Unit tests for all major components
+- `web/tests/` - Frontend application tests
+
 ## Prerequisites
 
 - Go 1.21+
@@ -40,18 +148,18 @@ GitHub Webhook → Go Service → OpenAI API → Slack
 - OpenAI API Key
 - Slack Bot Token and Signing Secret
 
-## 🛠️ Setup Instructions
+## Quick Start
 
-### 1. Clone the Repository
+### 1. Clone and Setup
 
 ```bash
 git clone <repository-url>
-cd github-issue-ai-bot
+cd NotifyOps
 ```
 
 ### 2. Environment Configuration
 
-Create a `.env` file in the root directory:
+Create a `.env` file:
 
 ```bash
 # GitHub Configuration
@@ -74,79 +182,20 @@ SERVER_PORT=8080
 LOG_LEVEL=info
 ```
 
-### 3. GitHub Setup
-
-1. **Create a Personal Access Token**:
-   - Go to GitHub Settings → Developer settings → Personal access tokens
-   - Generate a new token with `repo` and `read:org` scopes
-
-2. **Create a Webhook**:
-   - Go to your repository Settings → Webhooks
-   - Add webhook with URL: `https://your-domain.com/webhook/github`
-   - Set content type to `application/json`
-   - Select events: `Issues` and `Issue comments`
-   - Generate and save the webhook secret
-
-### 4. Slack Setup
-
-1. **Create a Slack App**:
-   - Go to [api.slack.com/apps](https://api.slack.com/apps)
-   - Create a new app
-   - Add bot token scopes: `chat:write`, `channels:read`
-   - Install the app to your workspace
-
-2. **Configure Interactive Components**:
-   - Go to Interactive Components
-   - Set request URL to: `https://your-domain.com/webhook/slack`
-
-3. **Get Required Tokens**:
-   - Copy the Bot User OAuth Token
-   - Copy the Signing Secret
-
-### 5. OpenAI Setup
-
-1. **Get API Key**:
-   - Go to [platform.openai.com](https://platform.openai.com)
-   - Create an account and get your API key
-
-## Running the Application
-
-### Option 1: Docker Compose (Recommended)
+### 3. Run with Docker Compose
 
 ```bash
-# Build and start all services
-docker-compose up -d
+# Start all services
+make docker-run
 
 # View logs
-docker-compose logs -f github-issue-ai-bot
+make docker-logs
 
 # Stop services
-docker-compose down
+make docker-stop
 ```
 
-### Option 2: Local Development
-
-```bash
-# Install dependencies
-go mod download
-
-# Run the application
-go run cmd/server/main.go
-```
-
-### Option 3: Build and Run
-
-```bash
-# Build the binary
-go build -o github-issue-ai-bot cmd/server/main.go
-
-# Run the binary
-./github-issue-ai-bot
-```
-
-## Monitoring
-
-### Access Points
+### 4. Access Points
 
 - **Application**: http://localhost:8080
 - **Health Check**: http://localhost:8080/health
@@ -154,54 +203,68 @@ go build -o github-issue-ai-bot cmd/server/main.go
 - **Prometheus**: http://localhost:9091
 - **Grafana**: http://localhost:3000 (admin/admin)
 
-### Key Metrics
+## Setup Instructions
 
-- **HTTP Requests**: Request count, duration, and status codes
-- **GitHub Webhooks**: Webhook processing metrics
-- **OpenAI API**: Request count, token usage, and errors
-- **Slack Messages**: Message sending metrics
-- **Issue Processing**: Processing time and success rates
+### GitHub Setup
 
-### Grafana Dashboards
+1. **Create Personal Access Token**:
+   - Go to GitHub Settings → Developer settings → Personal access tokens
+   - Generate token with `repo` and `read:org` scopes
 
-The application includes pre-configured Grafana dashboards for:
+2. **Create Webhook**:
+   - Go to repository Settings → Webhooks
+   - Add webhook URL: `https://your-domain.com/webhook/github`
+   - Set content type to `application/json`
+   - Select events: `Issues` and `Issue comments`
+   - Generate and save webhook secret
 
-- System Overview
-- GitHub Webhook Performance
-- OpenAI API Usage
-- Slack Message Delivery
-- Issue Processing Analytics
+### Slack Setup
 
-## AI Prompt Customization
+1. **Create Slack App**:
+   - Go to [api.slack.com/apps](https://api.slack.com/apps)
+   - Create new app
+   - Add bot token scopes: `chat:write`, `channels:read`
+   - Install app to workspace
 
-The bot supports multiple AI personalities and analysis styles that can be customized to match your team's needs:
+2. **Configure Interactive Components**:
+   - Go to Interactive Components
+   - Set request URL: `https://your-domain.com/webhook/slack`
 
-### Available Prompt Styles
+3. **Get Required Tokens**:
+   - Copy Bot User OAuth Token
+   - Copy Signing Secret
 
-| Style                | Personality      | Focus             | Best For                            |
-| -------------------- | ---------------- | ----------------- | ----------------------------------- |
-| `master_analyst`     | Master Analyst   | Technical Impact  | Comprehensive technical analysis    |
-| `senior_developer`   | Senior Developer | Code Quality      | Development-focused analysis        |
-| `devops_engineer`    | DevOps Engineer  | Operations        | Infrastructure and deployment focus |
-| `product_manager`    | Product Manager  | Business Value    | User experience and ROI analysis    |
-| `security_expert`    | Security Expert  | Security          | Security vulnerability assessment   |
-| `executive_summary`  | Master Analyst   | Business Impact   | High-level executive summaries      |
-| `quick_triage`       | Senior Developer | Rapid Assessment  | Fast issue triage                   |
-| `startup_focused`    | Product Manager  | Business Growth   | Early-stage company needs           |
-| `enterprise_focused` | Master Analyst   | Enterprise        | Large organization requirements     |
-| `security_critical`  | Security Expert  | Critical Security | High-security environments          |
+### OpenAI Setup
+
+1. **Get API Key**:
+   - Go to [platform.openai.com](https://platform.openai.com)
+   - Create account and get API key
+
+## AI Prompt Styles
+
+The bot supports multiple AI personalities for different analysis styles:
+
+| Style                | Focus             | Best For                            |
+| -------------------- | ----------------- | ----------------------------------- |
+| `master_analyst`     | Technical Impact  | Comprehensive technical analysis    |
+| `senior_developer`   | Code Quality      | Development-focused analysis        |
+| `devops_engineer`    | Operations        | Infrastructure and deployment focus |
+| `product_manager`    | Business Value    | User experience and ROI analysis    |
+| `security_expert`    | Security          | Security vulnerability assessment   |
+| `executive_summary`  | Business Impact   | High-level executive summaries      |
+| `quick_triage`       | Rapid Assessment  | Fast issue triage                   |
+| `startup_focused`    | Business Growth   | Early-stage company needs           |
+| `enterprise_focused` | Enterprise        | Large organization requirements     |
+| `security_critical`  | Critical Security | High-security environments          |
 
 ### Setting Prompt Styles
 
-**Via Environment Variable:**
-
+**Environment Variable:**
 ```bash
 export OPENAI_PROMPT_STYLE=security_expert
-make run
 ```
 
-**Via API (Runtime):**
-
+**Runtime API:**
 ```bash
 # List available styles
 curl http://localhost:8080/api/prompt-styles
@@ -212,22 +275,7 @@ curl -X POST http://localhost:8080/api/prompt-style \
   -d '{"style": "product_manager"}'
 ```
 
-**Via Docker Compose:**
-
-```yaml
-environment:
-  - OPENAI_PROMPT_STYLE=startup_focused
-```
-
-### Testing Different Styles
-
-Use the provided script to test all available styles:
-
-```bash
-./scripts/test_prompts.sh
-```
-
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -247,102 +295,85 @@ Use the provided script to test all available styles:
 | `SERVER_PORT`           | HTTP server port             | `8080`                   |
 | `LOG_LEVEL`             | Logging level                | `info`                   |
 
-### Configuration File
-
-You can also use a `config.yaml` file:
-
-```yaml
-server:
-  port: "8080"
-  read_timeout: "30s"
-  write_timeout: "30s"
-  idle_timeout: "60s"
-
-github:
-  webhook_secret: "your_secret"
-  access_token: "your_token"
-  base_url: "https://api.github.com"
-
-openai:
-  api_key: "your_key"
-  model: "gpt-4"
-  max_tokens: 2000
-  temperature: 0.7
-
-slack:
-  bot_token: "your_token"
-  signing_secret: "your_secret"
-  channel_id: "your_channel"
-
-monitor:
-  metrics_port: "9090"
-  metrics_path: "/metrics"
-
-log_level: "info"
-```
-
 ## API Endpoints
 
-### Health Check
+- `GET /health` - Health check
+- `GET /metrics` - Prometheus metrics
+- `POST /webhook/github` - GitHub webhook handler
+- `POST /webhook/slack` - Slack interactive messages
+- `GET /api/prompt-styles` - List available prompt styles
+- `POST /api/prompt-style` - Change prompt style
 
-```
-GET /health
+## Development
+
+### Local Development
+
+```bash
+# Install dependencies
+make deps
+
+# Run locally
+make run
+
+# Run tests
+make test
+
+# Build binary
+make build
 ```
 
-### Metrics
+### Docker Development
 
-```
-GET /metrics
+```bash
+# Build image
+make docker-build
+
+# Run with Docker Compose
+make docker-run
+
+# View logs
+make docker-logs
 ```
 
-### GitHub Webhook
+## Monitoring
 
-```
-POST /webhook/github
-```
+### Key Metrics
 
-### Slack Interactive Messages
+- **HTTP Requests**: Request count, duration, and status codes
+- **GitHub Webhooks**: Webhook processing metrics
+- **OpenAI API**: Request count, token usage, and errors
+- **Slack Messages**: Message sending metrics
+- **Issue Processing**: Processing time and success rates
 
-```
-POST /webhook/slack
-```
+### Grafana Dashboards
+
+Pre-configured dashboards for:
+- System Overview
+- GitHub Webhook Performance
+- OpenAI API Usage
+- Slack Message Delivery
+- Issue Processing Analytics
 
 ## Testing
 
 ### Manual Testing
 
-1. **Test Health Endpoint**:
+```bash
+# Test health endpoint
+curl http://localhost:8080/health
 
-   ```bash
-   curl http://localhost:8080/health
-   ```
-
-2. **Test Metrics Endpoint**:
-
-   ```bash
-   curl http://localhost:8080/metrics
-   ```
-
-3. **Test GitHub Webhook** (using ngrok for local development):
-
-   ```bash
-   # Install ngrok
-   ngrok http 8080
-
-   # Use the ngrok URL in your GitHub webhook configuration
-   ```
+# Test metrics endpoint
+curl http://localhost:8080/metrics
+```
 
 ### Unit Tests
 
 ```bash
 # Run all tests
-go test ./...
+make test
 
 # Run tests with coverage
-go test -cover ./...
-
-# Run specific package tests
-go test ./internal/github
+make test-coverage
 ```
 
 ## Deployment
@@ -351,15 +382,15 @@ go test ./internal/github
 
 ```bash
 # Build image
-docker build -t github-issue-ai-bot .
+docker build -t notifyops .
 
 # Run container
 docker run -d \
-  --name github-issue-ai-bot \
+  --name notifyops \
   -p 8080:8080 \
   -p 9090:9090 \
   --env-file .env \
-  github-issue-ai-bot
+  notifyops
 ```
 
 ### Kubernetes Deployment
@@ -368,9 +399,9 @@ See the `k8s/` directory for Kubernetes manifests.
 
 ### Production Considerations
 
-1. **SSL/TLS**: Use a reverse proxy (nginx, traefik) with SSL certificates
-2. **Load Balancing**: Deploy multiple instances behind a load balancer
-3. **Database**: Consider adding a database for persistent storage
+1. **SSL/TLS**: Use reverse proxy with SSL certificates
+2. **Load Balancing**: Deploy multiple instances behind load balancer
+3. **Database**: Consider adding database for persistent storage
 4. **Caching**: Add Redis for caching frequently accessed data
 5. **Logging**: Configure centralized logging (ELK stack, Fluentd)
 6. **Monitoring**: Set up alerting rules in Prometheus/Grafana
@@ -385,27 +416,20 @@ See the `k8s/` directory for Kubernetes manifests.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ## Support
 
 - **Issues**: Create an issue in the GitHub repository
 - **Documentation**: Check the inline code comments and this README
-- **Community**: Join our Slack channel for discussions
 
 # Contributors
-<div>
-<h2><font size="6"><img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Red%20Heart.png" alt="Red Heart" width="40" height="40" /> Contributors </font></h2>
-</div>
-<br>
 
 <center>
 <a href="https://github.com/Arpit529Srivastava/NotifyOps/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Arpit529Srivastava/NotifyOps" />
 </a>
 </center>
-<br>
-<br>
 
 ## Roadmap
 
