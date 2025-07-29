@@ -64,7 +64,24 @@ temp/
 # Terraform
 *.tfstate
 *.tfstate.*
+*.tfstate.backup
+*.tfstate.old
 .terraform/
+.terraform.lock.hcl
+terraform.tfvars
+*.auto.tfvars
+*.auto.tfvars.json
+*.tfplan
+*.tfplan.json
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+.terraform.tfstate.d/
 
 # Air (hot reload)
 tmp/
@@ -84,11 +101,14 @@ prometheus.yml.local
 grafana/data/
 grafana/provisioning/datasources/datasources.local.yml
 
-# SSL certificates
+# SSL certificates and SSH keys
 *.pem
 *.key
 *.crt
 *.csr
+notifyops-key
+notifyops-key.pem
+notifyops-key.pub
 
 # Backup files
 *.backup
