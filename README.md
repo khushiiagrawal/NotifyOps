@@ -95,23 +95,24 @@ NotifyOps/
 │   └── utils_test.go            # Utility function tests
 ├── scripts/                     # Utility scripts
 │   └── setup.sh                 # Environment setup script
-├── prometheus_data/             # Prometheus data storage          
-├── .gitignore                   
+├── prometheus_data/             # Prometheus data storage
+├── .gitignore
 ├── .github/                     # GitHub workflows and templates
 ├── docker-compose.yml           # Docker Compose configuration
 ├── Dockerfile                   # Main application container
-├── go.mod                       
-├── go.sum                      
+├── go.mod
+├── go.sum
 ├── Makefile                     # Build and deployment commands
-├── OWNERS                       
+├── OWNERS
 ├── prometheus.yml               # Prometheus configuration
-├── logo.png                     
-└── README.md                    
+├── logo.png
+└── README.md
 ```
 
 ### Key Files Explained
 
 **Core Application:**
+
 - `cmd/server/main.go` - Application entry point, server initialization, and routing
 - `internal/config/config.go` - Environment variable loading and configuration management
 - `internal/github/handler.go` - GitHub webhook processing and API integration
@@ -120,6 +121,7 @@ NotifyOps/
 - `internal/monitor/metrics.go` - Prometheus metrics collection and export
 
 **Configuration:**
+
 - `docker-compose.yml` - Multi-service container orchestration
 - `Dockerfile` - Main application container definition
 - `prometheus.yml` - Prometheus monitoring configuration
@@ -127,16 +129,19 @@ NotifyOps/
 - `grafana/datasources.yml` - Grafana data source configuration
 
 **Deployment:**
+
 - `k8s/` - Complete Kubernetes deployment manifests
 - `Makefile` - Build, test, and deployment commands
 - `scripts/setup.sh` - Environment setup and initialization
 
 **Web Application:**
+
 - `web/` - Next.js frontend application
 - `web/app/page.tsx` - Landing page component
 - `web/components/` - Reusable React components
 
 **Testing:**
+
 - `test/` - Unit tests for all major components
 - `web/tests/` - Frontend application tests
 
@@ -260,11 +265,13 @@ The bot supports multiple AI personalities for different analysis styles:
 ### Setting Prompt Styles
 
 **Environment Variable:**
+
 ```bash
 export OPENAI_PROMPT_STYLE=security_expert
 ```
 
 **Runtime API:**
+
 ```bash
 # List available styles
 curl http://localhost:8080/api/prompt-styles
@@ -348,6 +355,7 @@ make docker-logs
 ### Grafana Dashboards
 
 Pre-configured dashboards for:
+
 - System Overview
 - GitHub Webhook Performance
 - OpenAI API Usage
