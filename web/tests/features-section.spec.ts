@@ -11,7 +11,7 @@ test.describe('Features Section', () => {
   test('should display features section with proper heading', async ({ page }) => {
     const section = page.locator('#features');
     await expect(section).toBeVisible();
-    
+
     const heading = page.locator('h2:has-text("Powerful Features")');
     await expect(heading).toBeVisible();
   });
@@ -23,7 +23,7 @@ test.describe('Features Section', () => {
       'Rich Slack Integration',
       'Comprehensive Monitoring',
       'Production Ready',
-      'Containerized Deployment'
+      'Containerized Deployment',
     ];
 
     for (const feature of features) {
@@ -39,7 +39,7 @@ test.describe('Features Section', () => {
       'Beautiful interactive messages with action buttons',
       'Prometheus metrics with Grafana dashboards',
       'Health checks, graceful shutdown, error handling',
-      'Docker and Docker Compose ready with automated CI/CD'
+      'Docker and Docker Compose ready with automated CI/CD',
     ];
 
     for (const description of descriptions) {
@@ -67,7 +67,7 @@ test.describe('Features Section', () => {
       'Security hardened',
       'Docker optimized',
       'Compose templates',
-      'CI/CD ready'
+      'CI/CD ready',
     ];
 
     for (const detail of featureDetails) {
@@ -78,10 +78,10 @@ test.describe('Features Section', () => {
 
   test('should have hover effects on feature cards', async ({ page }) => {
     const featureCards = page.locator('div[class*="group relative"]');
-    
+
     // Hover over first feature card
     await featureCards.first().hover();
-    
+
     // Check if hover effect is applied
     await expect(featureCards.first()).toBeVisible();
   });
@@ -89,9 +89,9 @@ test.describe('Features Section', () => {
   test('should display integration showcase', async ({ page }) => {
     const integrationHeading = page.locator('h3:has-text("Seamless Integration")');
     await expect(integrationHeading).toBeVisible();
-    
+
     const integrations = ['GitHub', 'OpenAI', 'Slack', 'Grafana', 'Docker'];
-    
+
     for (const integration of integrations) {
       const integrationElement = page.locator(`span:has-text("${integration}")`);
       await expect(integrationElement).toBeVisible();
@@ -105,11 +105,11 @@ test.describe('Features Section', () => {
 
   test('should be responsive on mobile devices', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    
+
     // Check if features section is still visible
     const section = page.locator('#features');
     await expect(section).toBeVisible();
-    
+
     // Check if feature cards stack properly
     const featureCards = page.locator('div[class*="group relative"]');
     await expect(featureCards.first()).toBeVisible();
@@ -119,11 +119,11 @@ test.describe('Features Section', () => {
     // Scroll to features section
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForTimeout(500);
-    
+
     // Scroll to features section
     await page.locator('a:has-text("Features")').click();
     await page.waitForTimeout(1000);
-    
+
     // Check if animated elements are visible
     const animatedElements = page.locator('div[class*="motion"]');
     await expect(animatedElements.first()).toBeVisible();
@@ -132,16 +132,18 @@ test.describe('Features Section', () => {
   test('should have proper spacing and layout', async ({ page }) => {
     const section = page.locator('#features');
     await expect(section).toBeVisible();
-    
+
     // Check for proper grid layout
-    const gridContainer = page.locator('div[class*="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"]');
+    const gridContainer = page.locator(
+      'div[class*="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"]',
+    );
     await expect(gridContainer).toBeVisible();
   });
 
   test('should have proper text contrast and readability', async ({ page }) => {
     const headings = page.locator('h2, h3');
     await expect(headings.first()).toBeVisible();
-    
+
     // Check if text has proper styling
     const featureTitles = page.locator('h3');
     await expect(featureTitles.first()).toHaveClass(/text-xl/);
@@ -149,10 +151,10 @@ test.describe('Features Section', () => {
 
   test('should have interactive integration icons', async ({ page }) => {
     const integrationIcons = page.locator('div[class*="w-16 h-16 rounded-xl bg-white/5"]');
-    
+
     // Hover over first integration icon
     await integrationIcons.first().hover();
-    
+
     // Check if hover effect is applied
     await expect(integrationIcons.first()).toBeVisible();
   });
@@ -161,7 +163,7 @@ test.describe('Features Section', () => {
     // Check for proper section structure
     const section = page.locator('section#features');
     await expect(section).toBeVisible();
-    
+
     // Check for proper heading hierarchy
     const h2 = page.locator('h2');
     const h3 = page.locator('h3');
@@ -171,16 +173,16 @@ test.describe('Features Section', () => {
 
   test('should load without JavaScript errors', async ({ page }) => {
     const errors: string[] = [];
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         errors.push(msg.text());
       }
     });
-    
+
     await page.goto('/');
     await page.locator('a:has-text("Features")').click();
     await page.waitForTimeout(2000);
-    
+
     expect(errors.length).toBe(0);
   });
-}); 
+});

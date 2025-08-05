@@ -15,7 +15,9 @@ test.describe('Hero Section', () => {
   });
 
   test('should display typewriter text animation', async ({ page }) => {
-    const typewriterText = page.locator('div:has-text("Transform GitHub issues into actionable insights")');
+    const typewriterText = page.locator(
+      'div:has-text("Transform GitHub issues into actionable insights")',
+    );
     await expect(typewriterText).toBeVisible();
   });
 
@@ -24,7 +26,7 @@ test.describe('Hero Section', () => {
       'AI-Powered Analysis',
       'Real-time Processing',
       'Smart Slack Integration',
-      'GitHub Native'
+      'GitHub Native',
     ];
 
     for (const feature of features) {
@@ -36,7 +38,7 @@ test.describe('Hero Section', () => {
   test('should display CTA buttons', async ({ page }) => {
     const getStartedButton = page.locator('button:has-text("Get Started Free")');
     const watchDemoButton = page.locator('button:has-text("Watch Demo")');
-    
+
     await expect(getStartedButton).toBeVisible();
     await expect(watchDemoButton).toBeVisible();
   });
@@ -45,13 +47,13 @@ test.describe('Hero Section', () => {
     const stats = [
       { number: '99.9%', label: 'Uptime' },
       { number: '<100ms', label: 'Response Time' },
-      { number: '10+', label: 'AI Personalities' }
+      { number: '10+', label: 'AI Personalities' },
     ];
 
     for (const stat of stats) {
       const statNumber = page.locator(`div:has-text("${stat.number}")`);
       const statLabel = page.locator(`div:has-text("${stat.label}")`);
-      
+
       await expect(statNumber).toBeVisible();
       await expect(statLabel).toBeVisible();
     }
@@ -77,11 +79,11 @@ test.describe('Hero Section', () => {
 
   test('should be responsive on mobile devices', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    
+
     // Check if hero content is still visible and properly sized
     const title = page.locator('h1');
     await expect(title).toBeVisible();
-    
+
     // Check if buttons stack properly on mobile
     const buttons = page.locator('button');
     await expect(buttons).toHaveCount(2);
@@ -96,7 +98,7 @@ test.describe('Hero Section', () => {
   test('should have smooth animations on page load', async ({ page }) => {
     // Wait for animations to complete
     await page.waitForTimeout(2000);
-    
+
     // Check if all animated elements are visible
     const animatedElements = page.locator('div[class*="motion"]');
     await expect(animatedElements.first()).toBeVisible();
@@ -105,20 +107,20 @@ test.describe('Hero Section', () => {
   test('should have proper text contrast and readability', async ({ page }) => {
     const title = page.locator('h1');
     const subtitle = page.locator('div:has-text("Transform GitHub issues")');
-    
+
     await expect(title).toBeVisible();
     await expect(subtitle).toBeVisible();
-    
+
     // Check if text has proper styling classes
     await expect(title).toHaveClass(/text-4xl/);
   });
 
   test('should have interactive hover effects on feature cards', async ({ page }) => {
     const featureCards = page.locator('div[class*="backdrop-blur-sm"]');
-    
+
     // Hover over first feature card
     await featureCards.first().hover();
-    
+
     // Check if hover effect is applied (visual test)
     await expect(featureCards.first()).toBeVisible();
   });
@@ -127,7 +129,7 @@ test.describe('Hero Section', () => {
     // Check for proper heading hierarchy
     const h1 = page.locator('h1');
     await expect(h1).toBeVisible();
-    
+
     // Check for main content area
     const main = page.locator('main');
     await expect(main).toBeVisible();
@@ -136,16 +138,16 @@ test.describe('Hero Section', () => {
   test('should load without JavaScript errors', async ({ page }) => {
     // Listen for console errors
     const errors: string[] = [];
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         errors.push(msg.text());
       }
     });
-    
+
     await page.goto('/');
     await page.waitForTimeout(2000);
-    
+
     // Check if there are any console errors
     expect(errors.length).toBe(0);
   });
-}); 
+});
