@@ -4,6 +4,16 @@
 
 ### An intelligent GitHub Issue Notification System that uses AI to summarize issues and deliver actionable insights to Slack. Built with Go, featuring real-time webhook processing, OpenAI integration, and comprehensive monitoring with Prometheus and Grafana.
 
+# Sample
+
+### GitHub Issues Raised
+
+<img src = "web/public/images/github.png">
+
+### Slack Notification with AI Suggestions
+
+<img src = "web/public/images/slack.png">
+
 ## Features
 
 - **AI-Powered Summarization**: Uses OpenAI GPT to generate contextual summaries of GitHub issues
@@ -213,6 +223,7 @@ make docker-stop
 ### GitHub Setup
 
 1. **Create Personal Access Token**:
+
    - Go to GitHub Settings → Developer settings → Personal access tokens
    - Generate token with `repo` and `read:org` scopes
 
@@ -226,12 +237,14 @@ make docker-stop
 ### Slack Setup
 
 1. **Create Slack App**:
+
    - Go to [api.slack.com/apps](https://api.slack.com/apps)
    - Create new app
    - Add bot token scopes: `chat:write`, `channels:read`
    - Install app to workspace
 
 2. **Configure Interactive Components**:
+
    - Go to Interactive Components
    - Set request URL: `https://your-domain.com/webhook/slack`
 
