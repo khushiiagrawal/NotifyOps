@@ -454,11 +454,11 @@ This project is licensed under the MIT License.
 
 ## Roadmap
 
-- [ ] Support for GitHub Pull Requests
-- [ ] Advanced AI models and fine-tuning
-- [ ] Multi-channel notifications (Discord, Teams, etc.)
-- [ ] Issue trend analysis and reporting
-- [ ] Automated issue triage and assignment
+- [X] Support for GitHub Pull Requests
+- [X] Advanced AI models and fine-tuning
+- [X] Multi-channel notifications (Discord, Teams, etc.)
+- [X] Issue trend analysis and reporting
+- [X] Automated issue triage and assignment
 - [ ] Integration with Jira and other project management tools
 - [ ] Advanced filtering and routing rules
 - [ ] User preference management
