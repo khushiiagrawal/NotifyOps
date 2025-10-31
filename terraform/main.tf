@@ -66,6 +66,17 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 
+resource "aws_subnet" "public_subnet_2" {
+  vpc_id                  = aws_vpc.notifyops_vpc.id
+  cidr_block              = var.public_subnet_2_cidr
+  availability_zone       = data.aws_availability_zones.available.names[1]
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "notifyops-public-subnet-2"
+  }
+}
+
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.notifyops_vpc.id
 
@@ -89,6 +100,11 @@ resource "aws_route_table" "public_rt" {
 
 resource "aws_route_table_association" "public_rta" {
   subnet_id      = aws_subnet.public_subnet.id
+  route_table_id = aws_route_table.public_rt.id
+}
+
+resource "aws_route_table_association" "public_rta_2" {
+  subnet_id      = aws_subnet.public_subnet_2.id
   route_table_id = aws_route_table.public_rt.id
 }
 
@@ -306,6 +322,29 @@ resource "aws_instance" "notifyops_instance" {
 resource "aws_key_pair" "notifyops_key" {
   key_name   = "notifyops-key"
   public_key = var.ssh_public_key
+}
+
+# Minimal EKS Cluster (NotifyOps)
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 20.0"
+
+  cluster_name                    = var.eks_cluster_name
+  cluster_version                 = var.eks_version
+  vpc_id                          = aws_vpc.notifyops_vpc.id
+  subnet_ids                      = [aws_subnet.public_subnet.id, aws_subnet.public_subnet_2.id]
+  cluster_endpoint_public_access  = true
+
+  eks_managed_node_groups = {
+    default = {
+      instance_types = ["t3.small"]
+      min_size       = 1
+      max_size       = 1
+      desired_size   = 1
+      capacity_type  = "ON_DEMAND"
+      subnets        = [aws_subnet.public_subnet.id, aws_subnet.public_subnet_2.id]
+    }
+  }
 }
 
 # Outputs
