@@ -42,3 +42,18 @@ output "ssh_command" {
   description = "SSH command to connect to the EC2 instance"
   value       = "ssh -i notifyops-key.pem ec2-user@${aws_instance.notifyops_instance.public_ip}"
 } 
+
+output "eks_cluster_name" {
+  description = "EKS cluster name"
+  value       = module.eks.cluster_name
+}
+
+output "eks_cluster_endpoint" {
+  description = "EKS cluster endpoint"
+  value       = module.eks.cluster_endpoint
+}
+
+output "eks_cluster_oidc_issuer_url" {
+  description = "EKS cluster OIDC issuer URL"
+  value       = module.eks.oidc_provider
+}
